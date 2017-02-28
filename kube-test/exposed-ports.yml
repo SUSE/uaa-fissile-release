@@ -1,0 +1,16 @@
+# This file contains the ports to expose
+---
+apiVersion: v1
+kind: Service
+metadata:
+  creationTimestamp: null
+  name: uaa-ports
+spec:
+  ports:
+  - name: uaa-ssl
+    port: 8443
+    targetPort: 8443
+  externalIPs :
+  - 192.168.77.77
+  selector:
+    skiff-role-name: uaa

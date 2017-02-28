@@ -1,0 +1,24 @@
+---
+properties:
+  cf_mysql:
+    mysql:
+      database_startup_timeout: 300
+      galera_healthcheck:
+        endpoint_username: galera_healthcheck_bootstrap_user
+      max_open_files: 1500
+  hcf:
+    monit:
+      user: admin
+      port: 2289
+  uaa:
+    jwt:
+      policy:
+        active_key_id: default
+    logging_level: INFO
+  uaadb:
+    address: mysql-int
+    databases:
+    - name: uaadb
+      tag: uaa
+    db_scheme: mysql
+    port: 3306
