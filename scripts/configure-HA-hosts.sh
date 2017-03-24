@@ -15,7 +15,7 @@ find_cluster_ha_hosts() {
     if test -z "${KUBERNETES_SERVICE_HOST:-}" ; then
         # on Vagrant / AWS ; HA is not supported
         # Fall back to simple hostname
-        echo "[\"${component_name}-int\"]"
+        echo "[\"${component_name}\"]"
         return 0
     fi
 
@@ -34,7 +34,7 @@ find_cluster_ha_hosts() {
 
             # Note: The varname deref gives us an IP address. We want the
             # actual host name, and construct it.
-            hosts="${hosts},\"${component_name}-${i}-int.${HCP_SERVICE_DOMAIN_SUFFIX}\""
+            hosts="${hosts},\"${component_name}-${i}.${HCP_SERVICE_DOMAIN_SUFFIX}\""
             i="$(expr "${i}" + 1)"
         done
     else
@@ -43,14 +43,14 @@ find_cluster_ha_hosts() {
         local this_component="${HOSTNAME%-*}"
         if test "${this_component}" != "${component_name}" ; then
             # When talking to other components, use the generic service hostname
-            echo "[\"${component_name}-int\"]"
+            echo "[\"${component_name}\"]"
             return 0
         fi
 
         # Loop over the environment to locate the component name variables.
         local hosts=''
         local name
-        for name in $(dig "${component_name}-int.${HCP_SERVICE_DOMAIN_SUFFIX}" -t SRV | awk '/IN[\t ]+A/ { print $1 }') ; do
+        for name in $(dig "${component_name}.${HCP_SERVICE_DOMAIN_SUFFIX}" -t SRV | awk '/IN[\t ]+A/ { print $1 }') ; do
             hosts="${hosts},\"${name%.}\""
         done
     fi

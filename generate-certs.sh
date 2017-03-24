@@ -97,15 +97,15 @@ openssl x509 -req -days 3650 -in hcf.csr -signkey hcf.key -out hcf.crt
 # - Include "COMPONENT.uaa.svc", "COMPONENT.uaa.svc.cluster", "COMPONENT.uaa.svc.cluster.local"
 make_domains() {
     local host_name="$1"
-    local result="${host_name}-int,*.${host_name}-int"
+    local result="${host_name},*.${host_name}"
     local i
     for (( i = 0; i < 10; i++ )) ; do
         result="${result},${host_name}-${i}.${host_name}-pod"
     done
     local cluster_name
     for cluster_name in "" .cluster.local ; do
-        result="${result},${host_name}-int.uaa.svc${cluster_name}"
-        result="${result},*.${host_name}-int.uaa.svc${cluster_name}"
+        result="${result},${host_name}.uaa.svc${cluster_name}"
+        result="${result},*.${host_name}.uaa.svc${cluster_name}"
         for (( i = 0; i < 10; i++ )) ; do
             result="${result},${host_name}-${i}.${host_name}-pod.uaa.svc${cluster_name}"
         done
