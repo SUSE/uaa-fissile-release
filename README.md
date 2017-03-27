@@ -13,7 +13,13 @@ other methods of deploying Kubernetes should work as well.
 [hcf.git]: https://github.com/hpcloud/hcf/tree/master/docs/kube.md
 
 ### docker
-Docker is required for [fissile] to build images.
+Docker is required for [fissile] to build images.  You may also need access to a
+[docker registry] unless you're testing against a vagrant box or [minikube].  In
+the case of [minikube], reusing the [minikube docker daemon] may be useful.
+
+[docker registry]: https://github.com/docker/distribution
+[minikube]: https://kubernetes.io/docs/getting-started-guides/minikube/
+[minikube docker daemon]: https://kubernetes.io/docs/getting-started-guides/minikube/#reusing-the-docker-daemon
 
 ### fissile
 
@@ -84,8 +90,14 @@ instructions there.
     you have multiple nodes), you will also need to specify
     `--docker-registry=docker.registry:123456` (and possibly
     `--docker-organization`) so that the images can be pulled.
-3. Deploy to Kubernetes
-    ```
+3. If you're not building directly on a single Kubernetes node that you will
+   deploy to, you will need to publish to the specified docker registry:
+   ```sh
+   fissile show image | xargs -i@ docker tag @ "${FISSILE_DOCKER_REGISTRY}/@"
+   fissile show image | xargs -i@ docker push "${FISSILE_DOCKER_REGISTRY}/@"
+   ```
+4. Deploy to Kubernetes
+    ```sh
     # The following is a sample for hyperkube/minikube/vagrant
     kubectl create -f kube-test/storage-class-host-path.yml
 
