@@ -12,13 +12,14 @@ other methods of deploying Kubernetes should work as well.
 
 [hcf.git]: https://github.com/hpcloud/hcf/tree/master/docs/kube.md
 
+### docker
+Docker is required for [fissile] to build images.
+
 ### fissile
 
-Currently, [fissile] needs to be built from the [kube branch].  This is
-expected to be resolved soon.
+[fissile] is required to build the docker images and configuration.
 
 [fissile]: https://github.com/hpcloud/fissile
-[kube branch]: https://github.com/hpcloud/fissile/tree/kube
 
 ### direnv
 [direnv] is recommended, but manually sourcing the `.envrc` should work just as
@@ -26,11 +27,26 @@ well.
 
 [direnv]: https://github.com/direnv/direnv/
 
+### Ruby
+Ruby 2.3 is needed to install some of the releases.  Using [rbenv] with
+[ruby-build] should work, but if you have issues [ruby-install] is also an
+option.
+
+[rbenv]: https://github.com/sstephenson/rbenv
+[ruby-build]: https://github.com/rbenv/ruby-build
+[ruby-install]: https://github.com/postmodern/ruby-install/
+
 ### BOSH cli
 The Ruby version of the [BOSH cli] is required as of writing, as fissile is not
 yet compatible with the golang BOSH v2.
 
 [BOSH cli]: https://rubygems.org/gems/bosh_cli
+
+### certstrap
+Required to create certificates. Requires golang.
+```sh
+go get github.com/square/certstrap
+```
 
 ## Building
 
@@ -64,6 +80,10 @@ instructions there.
     fissile build kube -k kube/ --use-memory-limits=false \
         -D $(echo env/*.env | tr ' ' ',')
     ```
+    If you are not building the images directly on the Kubernetes cluster (or if
+    you have multiple nodes), you will also need to specify
+    `--docker-registry=docker.registry:123456` (and possibly
+    `--docker-organization`) so that the images can be pulled.
 3. Deploy to Kubernetes
     ```
     # The following is a sample for hyperkube/minikube/vagrant
