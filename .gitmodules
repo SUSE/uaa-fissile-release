@@ -1,0 +1,6 @@
+[submodule "src/uaa-release"]
+	path = src/uaa-release
+	url = https://github.com/cloudfoundry/uaa-release.git
+[submodule "src/cf-mysql-release"]
+	path = src/cf-mysql-release
+	url = https://github.com/cloudfoundry/cf-mysql-release.git

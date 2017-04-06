@@ -1,0 +1,28 @@
+---
+properties:
+  cf_mysql:
+    mysqsl:
+      admin_password: ~
+      cluster_health:
+        password: ~
+      galera_healthcheck:
+        db_password: ~
+        endpoint_password: ~
+  hcf:
+    monit:
+      password: ~
+  login:
+    saml:
+      serviceProviderKey: ~
+  uaa:
+    admin:
+      client_secret: ~
+    clients:
+      default_zone_admin:
+        secret: ~
+    jwt:
+      policy:
+        keys:
+          default:
+            signingKey: ~
+    sslPrivateKey: ~
