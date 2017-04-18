@@ -12,5 +12,5 @@ images:
 
 build: certs releases images
 
-run:
-	${GIT_ROOT}/make/run
+kube-configs:
+	${GIT_ROOT}/make/kube-configs
