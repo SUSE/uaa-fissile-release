@@ -5,7 +5,7 @@ set -o errexit -o nounset
 GIT_ROOT=${GIT_ROOT:-$(git rev-parse --show-toplevel)}
 
 cd "$GIT_ROOT"
-source .envrc
+. ${GIT_ROOT}/.envrc
 fissile build layer compilation
 fissile build layer stemcell
 fissile build packages
