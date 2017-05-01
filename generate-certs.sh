@@ -17,6 +17,7 @@ load_env() {
             echo "Invalid environment file ${f}" >&2
             exit 1
         fi
+        # shellcheck disable=SC1090
         source "${f}"
         has_env=yes
     done
@@ -82,13 +83,12 @@ _cleanup () {
 trap  _cleanup EXIT
 hcf_certs_path="${certs_path}/hcf"
 internal_certs_dir="${certs_path}/internal"
-output_path="$(readlink --canonicalize-missing "${output_path}")"
 
 # generate cf ha_proxy certs
 # Source: https://github.com/cloudfoundry/cf-release/blob/master/example_manifests/README.md#dns-configuration
-rm -rf ${hcf_certs_path}
-mkdir -p ${hcf_certs_path}
-cd ${hcf_certs_path}
+rm -rf "${hcf_certs_path}"
+mkdir -p "${hcf_certs_path}"
+pushd "${hcf_certs_path}" &>/dev/null
 
 openssl genrsa -out hcf.key 4096
 openssl req -new -key hcf.key -out hcf.csr -sha512 -subj "/CN=*.${DOMAIN}/C=US"
@@ -152,15 +152,22 @@ certstrap --depot-path "${internal_certs_dir}" sign "uaa" --CA internalCA --pass
 cp "${internal_certs_dir}/uaa.crt" "${uaa_server_crt}"
 cat "${internal_certs_dir}/uaa.crt" "${internal_certs_dir}/uaa.key" > "${uaa_server_key}"
 
-INTERNAL_CA_CERT=$(sed '$!{:a;N;s/\n/\\n/;ta}' "${internal_certs_dir}/internalCA.crt")
-JWT_SIGNING_PEM=$(sed '$!{:a;N;s/\n/\\n/;ta}' "${certs_path}/jwt_signing.pem")
-JWT_SIGNING_PUB=$(sed '$!{:a;N;s/\n/\\n/;ta}' "${certs_path}/jwt_signing.pub")
-SAML_SERVICEPROVIDER_CERT=$(sed '$!{:a;N;s/\n/\\n/;ta}' "${internal_certs_dir}/saml_serviceprovider.crt")
-SAML_SERVICEPROVIDER_KEY=$(sed '$!{:a;N;s/\n/\\n/;ta}' "${internal_certs_dir}/saml_serviceprovider.key")
-UAA_SERVER_CERT=$(sed '$!{:a;N;s/\n/\\n/;ta}' "${uaa_server_crt}")
-UAA_SERVER_KEY=$(sed '$!{:a;N;s/\n/\\n/;ta}' "${uaa_server_key}")
+# escape_file_contents reads the given file and replaces newlines with the literal string '\n'
+escape_file_contents() {
+    # Add a backslash at the end of each line, then replace the newline with a literal 'n'
+    sed 's@$@\\@' < "$1" | tr '\n' 'n'
+}
+INTERNAL_CA_CERT=$(escape_file_contents "${internal_certs_dir}/internalCA.crt")
+JWT_SIGNING_PEM=$(escape_file_contents "${certs_path}/jwt_signing.pem")
+JWT_SIGNING_PUB=$(escape_file_contents "${certs_path}/jwt_signing.pub")
+SAML_SERVICEPROVIDER_CERT=$(escape_file_contents "${internal_certs_dir}/saml_serviceprovider.crt")
+SAML_SERVICEPROVIDER_KEY=$(escape_file_contents "${internal_certs_dir}/saml_serviceprovider.key")
+UAA_SERVER_CERT=$(escape_file_contents "${uaa_server_crt}")
+UAA_SERVER_KEY=$(escape_file_contents "${uaa_server_key}")
 
-cat <<ENVS > ${output_path}
+popd &>/dev/null
+
+cat <<ENVS > "${output_path}"
 INTERNAL_CA_CERT=${INTERNAL_CA_CERT}
 JWT_SIGNING_PEM=${JWT_SIGNING_PEM}
 JWT_SIGNING_PUB=${JWT_SIGNING_PUB}
