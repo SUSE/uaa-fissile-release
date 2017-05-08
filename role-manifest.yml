@@ -118,20 +118,44 @@ configuration:
     description: >
       Base domain name of the UAA endpoint; `uaa.${DOMAIN}` must be correctly
       configured to point to this UAA instance
+  - name: HCP_COMPONENT_INDEX
+    type: environment
+  - name: HCP_SERVICE_DOMAIN_SUFFIX
+  - name: JWT_SIGNING_PEM
+  - name: KUBERNETES_NAMESPACE
   - name: MONIT_PASSWORD
     secret: true
     immutable: true
     generator:
       type: Password
     description: Password used for the monit API.
-  - name: INTERNAL_CA_CERT
+  - name: MYSQL_ADMIN_PASSWORD
     secret: true
+    immutable: true
     generator:
-      id: "cacert"
-      type: CACertificate
-      value_type: certificate
-    description: PEM-encoded CA certificate used to sign TLS certificate hosted by Diego BBS.
-  - name: JWT_SIGNING_PEM
+      type: Password
+    description: The password for the MySQL server admin user.
+    required: true
+  - name: MYSQL_CLUSTER_HEALTH_PASSWORD
+    secret: true
+    immutable: true
+    generator:
+      type: Password
+    description: The password for the cluster logger health user.
+    required: true
+  - name: MYSQL_GALERA_HEALTHCHECK_ENDPOINT_PASSWORD
+    secret: true
+    immutable: true
+    generator:
+      type: Password
+    description: The password used to contact the sidecar endpoints via Basic Auth.
+    required: true
+  - name: MYSQL_HCF_CLUSTER_CONFIG_REVISION
+    default: 0
+    description: An indicator to increment when changing the number of MySQL hosts in the cluster, to properly trigger HCP component restarts.
+    required: true
+  - name: MYSQL_HCF_CLUSTER_IPS
+    type: environment
   - name: SAML_SERVICEPROVIDER_CERT
     secret: true
     generator:
@@ -147,6 +171,12 @@ configuration:
       value_type: private_key
       key_length: 4096
     description: PEM-encoded key.
+  - name: UAADB_PASSWORD
+    secret: true
+    immutable: true
+    generator:
+      type: Password
+    description: The password for access to the UAA database.
   - name: UAA_ADMIN_CLIENT_SECRET
     secret: true
     immutable: true
@@ -168,22 +198,13 @@ configuration:
       value_type: private_key
       key_length: 4096
     description: The server's ssl private key. Only passphrase-less keys are supported.
-  - name: UAADB_PASSWORD
-    secret: true
-    immutable: true
-    generator:
-      type: Password
-    description: The password for access to the UAA database.
   templates:
-    properties.domain: '"((DOMAIN))"'
-    properties.hcf.monit.password: '"((MONIT_PASSWORD))"'
+    properties.fissile.monit.password: '"((MONIT_PASSWORD))"'
     properties.login.saml.serviceProviderCertificate: '"((SAML_SERVICEPROVIDER_CERT))"'
     properties.login.saml.serviceProviderKey: '"((SAML_SERVICEPROVIDER_KEY))"'
     properties.login.url: "https://login.((DOMAIN)):8443"
-    # This is only used to create the custom zone and populate it
-    properties.route_registrar.routes: '[{"name":"uaa", "port": 8080, "tags":{"component":"uaa"}, "uris":["uaa.((DOMAIN))", "*.uaa.((DOMAIN))", "login.((DOMAIN))", "*.login.((DOMAIN))"], "registration_interval":"10s"}]'
     properties.uaa.admin.client_secret: '"((UAA_ADMIN_CLIENT_SECRET))"'
-    properties.uaa.ca_cert: ((INTERNAL_CA_CERT))
+    properties.uaa.clients.default_zone_admin.secret: '"((UAA_ADMIN_CLIENT_SECRET))"'
     properties.uaa.clients: '{"default_zone_admin": {"secret": "((UAA_ADMIN_CLIENT_SECRET))", "authorized-grant-types": "client_credentials", "scope": "uaa.admin", "authorities": "uaa.admin"}}'
     properties.uaa.jwt.policy.keys.default.signingKey: ((JWT_SIGNING_PEM))
     properties.uaa.sslCertificate: ((UAA_SERVER_CERT))

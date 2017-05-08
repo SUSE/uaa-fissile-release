@@ -1,14 +1,14 @@
 ---
 properties:
   cf_mysql:
-    mysqsl:
+    mysql:
       admin_password: ~
       cluster_health:
         password: ~
       galera_healthcheck:
         db_password: ~
         endpoint_password: ~
-  hcf:
+  fissile:
     monit:
       password: ~
   login:
