@@ -8,7 +8,7 @@ metadata:
 spec:
   ports:
   - name: uaa-ssl
-    port: 8443
+    port: 2793
     targetPort: 8443
   externalIPs :
   - 192.168.77.77

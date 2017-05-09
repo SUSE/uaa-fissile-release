@@ -103,7 +103,7 @@ roles:
         public: false
       - name: uaa-ssl
         protocol: TCP
-        external: 8443
+        external: 2793
         internal: 8443
         public: false
     healthcheck:
@@ -204,12 +204,12 @@ configuration:
     properties.fissile.monit.password: '"((MONIT_PASSWORD))"'
     properties.login.saml.serviceProviderCertificate: '"((SAML_SERVICEPROVIDER_CERT))"'
     properties.login.saml.serviceProviderKey: '"((SAML_SERVICEPROVIDER_KEY))"'
-    properties.login.url: "https://login.((DOMAIN)):8443"
+    properties.login.url: "https://login.((DOMAIN)):2793"
     properties.uaa.admin.client_secret: '"((UAA_ADMIN_CLIENT_SECRET))"'
     properties.uaa.clients.default_zone_admin.secret: '"((UAA_ADMIN_CLIENT_SECRET))"'
     properties.uaa.clients: '{"default_zone_admin": {"secret": "((UAA_ADMIN_CLIENT_SECRET))", "authorized-grant-types": "client_credentials", "scope": "uaa.admin", "authorities": "uaa.admin"}}'
     properties.uaa.jwt.policy.keys.default.signingKey: ((JWT_SIGNING_PEM))
     properties.uaa.sslCertificate: ((UAA_SERVER_CERT))
     properties.uaa.sslPrivateKey: ((UAA_SERVER_KEY))
-    properties.uaa.url: "https://uaa.((DOMAIN)):8443"
+    properties.uaa.url: "https://uaa.((DOMAIN)):2793"
     properties.uaa.zones.internal.hostnames: '["uaa","uaa.((KUBERNETES_NAMESPACE))","uaa.((KUBERNETES_NAMESPACE)).svc","uaa.((HCP_SERVICE_DOMAIN_SUFFIX))"]'
