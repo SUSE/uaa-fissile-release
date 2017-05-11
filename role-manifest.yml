@@ -125,6 +125,7 @@ configuration:
   - name: HCP_SERVICE_DOMAIN_SUFFIX
   - name: JWT_SIGNING_PEM
   - name: KUBERNETES_NAMESPACE
+    type: environment
   - name: MONIT_PASSWORD
     secret: true
     immutable: true
