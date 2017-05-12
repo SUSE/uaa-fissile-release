@@ -6,7 +6,7 @@ properties:
       galera_healthcheck:
         endpoint_username: galera_healthcheck_bootstrap_user
       max_open_files: 1500
-  hcf:
+  fissile:
     monit:
       user: admin
       port: 2289
