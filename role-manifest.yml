@@ -77,6 +77,8 @@ roles:
 - name: uaa
   environment_scripts:
   - scripts/configure-HA-hosts.sh
+  scripts:
+  - scripts/patches/uaa_monit_timeout.sh
   jobs:
   - name: global-properties # needs to be first so images use it for processing monit templates
     release_name: hcf
