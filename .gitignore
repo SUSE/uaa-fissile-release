@@ -6,3 +6,4 @@
 /src/*-release/config/dev.yml
 /src/*-release/dev_releases/
 /kube
+/*.zip
