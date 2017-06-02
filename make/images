@@ -6,7 +6,5 @@ GIT_ROOT=${GIT_ROOT:-$(git rev-parse --show-toplevel)}
 
 cd "$GIT_ROOT"
 . ${GIT_ROOT}/.envrc
-fissile build layer compilation
-fissile build layer stemcell
-fissile build packages
-fissile build images
+fissile build packages --stemcell ${FISSILE_STEMCELL}
+fissile build images   --stemcell ${FISSILE_STEMCELL}

@@ -58,19 +58,30 @@ go get github.com/square/certstrap
 
 1. Run `generate-certs.sh` to generate the SSL certificates required.  The
     default options are fine.
+
 2. Create the BOSH release for `cf-mysql`, `uaa`, and `hcf`:
     ```
     bosh create release --dir src/cf-mysql-release --force --name cf-mysql
     bosh create release --dir src/uaa-release --force --name uaa
     bosh create release --dir src/hcf-release --force --name hcf
     ```
+
 3. Build fissile images
     ```
-    fissile build layer compilation
-    fissile build layer stemcell
-    fissile build packages
-    fissile build images
+    STEMCELL=splatform/fissile-stemcell-opensuse:42.2-0.g58a22c9-28.16
+    fissile build packages --stemcell ${STEMCELL}
+    fissile build images   --stemcell ${STEMCELL}
     ```
+
+Or, more convenient
+
+    ```
+    make images
+    ```
+
+Note, the specified stemcell is an example. Change it to suit.  The
+alternative command uses the definition of `FISSILE_STEMCELL` in
+`.envrc` for this.
 
 ## Running
 
