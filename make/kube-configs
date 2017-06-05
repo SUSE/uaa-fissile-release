@@ -8,4 +8,3 @@ cd "$GIT_ROOT"
 . ${GIT_ROOT}/.envrc
 fissile build kube -k kube/ --use-memory-limits=false \
 	    -D $(echo env/*.env | tr ' ' ',')
-fissile show image | xargs -i@ docker tag @ "${FISSILE_DOCKER_REGISTRY}/@"

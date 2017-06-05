@@ -15,5 +15,8 @@ images:
 kube-configs:
 	${GIT_ROOT}/make/kube-configs
 
-.PHONY: build certs releases images kube-configs
+package-kube:
+	${GIT_ROOT}/make/package-kube
+
+.PHONY: build certs releases images kube-configs package-kube
 

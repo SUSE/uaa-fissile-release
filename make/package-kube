@@ -1,0 +1,15 @@
+#!/bin/sh
+
+set -o errexit -o nounset
+
+GIT_ROOT=${GIT_ROOT:-$(git rev-parse --show-toplevel)}
+GIT_DESCRIBE=${GIT_DESCRIBE:-$(git describe --tags --long)}
+
+ARTIFACT=uaa-kube-${GIT_DESCRIBE}.zip
+
+rm ${GIT_ROOT}/${ARTIFACT} 2>/dev/null || true
+
+cd kube && zip -r9 ${GIT_ROOT}/${ARTIFACT} * \
+    ${NULL:-}
+
+echo Generated ${ARTIFACT}
