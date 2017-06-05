@@ -154,7 +154,7 @@ configuration:
     required: true
   - name: MYSQL_HCF_CLUSTER_CONFIG_REVISION
     default: 0
-    description: An indicator to increment when changing the number of MySQL hosts in the cluster, to properly trigger HCP component restarts.
+    description: An indicator to increment when changing the number of MySQL hosts in the cluster, to properly trigger component restarts.
     required: true
   - name: MYSQL_HCF_CLUSTER_IPS
     type: environment

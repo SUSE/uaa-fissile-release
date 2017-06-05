@@ -21,8 +21,6 @@ find_cluster_ha_hosts() {
 
     local hosts=''
     if test -z "${KUBERNETES_NAMESPACE:-}" ; then
-        # Running on HCP
-
         local i=0
 
         while test "${i}" -lt 100 ; do
@@ -72,7 +70,7 @@ find_cluster_ha_hosts() {
 }
 
 if test -n "${KUBERNETES_NAMESPACE:-}" ; then
-    # We're on raw Kubernetes; install some HCP-compat things
+    # We're on raw Kubernetes; install some compat things
     export HCP_IDENTITY_SCHEME=https
     export HCP_IDENTITY_EXTERNAL_HOST="uaa.${DOMAIN}"
     export HCP_IDENTITY_EXTERNAL_PORT=443
