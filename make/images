@@ -5,6 +5,6 @@ set -o errexit -o nounset
 GIT_ROOT=${GIT_ROOT:-$(git rev-parse --show-toplevel)}
 
 cd "$GIT_ROOT"
-. ${GIT_ROOT}/.envrc
-fissile build packages --stemcell ${FISSILE_STEMCELL}
-fissile build images   --stemcell ${FISSILE_STEMCELL}
+. "${GIT_ROOT}/.envrc"
+fissile build packages --stemcell "${FISSILE_STEMCELL}"
+fissile build images   --stemcell "${FISSILE_STEMCELL}" --docker-registry "${UAA_IMAGE_REGISTRY}" --docker-organization "${UAA_IMAGE_ORG}" --repository "${UAA_IMAGE_PREFIX}"
