@@ -7,10 +7,10 @@ It is roughly equivalent to doing the same with BOSH.
 
 ### A Kubernetes cluster
 
-[hcf.git] has sample instructions for setting one up locally via hyperkube; 
+[scf.git] has sample instructions for setting one up locally via hyperkube;
 other methods of deploying Kubernetes should work as well.
 
-[hcf.git]: https://github.com/hpcloud/hcf/tree/master/docs/kube.md
+[scf.git]: https://github.com/suse/scf/tree/master/docs/kube.md
 
 ### docker
 Docker is required for [fissile] to build images.  You may also need access to a
@@ -25,7 +25,7 @@ the case of [minikube], reusing the [minikube docker daemon] may be useful.
 
 [fissile] is required to build the docker images and configuration.
 
-[fissile]: https://github.com/hpcloud/fissile
+[fissile]: https://github.com/suse/fissile
 
 ### direnv
 [direnv] is recommended, but manually sourcing the `.envrc` should work just as
@@ -85,10 +85,10 @@ alternative command uses the definition of `FISSILE_STEMCELL` in
 
 ## Running
 
-The default configurations are designed for the [hcf] vagrant box; see 
+The default configurations are designed for the [scf] vagrant box; see
 instructions there.
 
-[hcf]: https://github.com/hpcloud/hcf
+[scf]: https://github.com/suse/scf
 
 1. If necessary, push the images to your Kubernetes nodes (or publish them in a
     way that they get fetch the images).
