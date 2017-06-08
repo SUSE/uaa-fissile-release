@@ -18,5 +18,8 @@ kube-configs:
 package-kube:
 	${GIT_ROOT}/make/package-kube
 
-.PHONY: build certs releases images kube-configs package-kube
+publish:
+	${GIT_ROOT}/make/publish
+
+.PHONY: build certs releases images kube-configs package-kube publish
 
