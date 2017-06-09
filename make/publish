@@ -1,13 +1,13 @@
 #!/bin/sh
 
 set -o errexit -o nounset
+set -x
 
 GIT_ROOT=${GIT_ROOT:-$(git rev-parse --show-toplevel)}
 
-cd "$GIT_ROOT"
-. "${GIT_ROOT}/.envrc"
+. "${GIT_ROOT}/make/include/registry"
 
-BOSH_IMAGES=${BOSH_IMAGES:-$(fissile show image --docker-registry "${UAA_IMAGE_REGISTRY}" --docker-organization "${UAA_IMAGE_ORG}" -p "${UAA_IMAGE_PREFIX}")}
+BOSH_IMAGES=${BOSH_IMAGES:-$(fissile show image --docker-registry "${IMAGE_REGISTRY}" --docker-organization "${IMAGE_ORG}" --repository "${IMAGE_PREFIX}")}
 
 for image in ${BOSH_IMAGES}; do
     # Redirect docker stdout to avoid polluting logfiles with progressbar characters
