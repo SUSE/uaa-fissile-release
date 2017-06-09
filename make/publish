@@ -5,6 +5,7 @@ set -x
 
 GIT_ROOT=${GIT_ROOT:-$(git rev-parse --show-toplevel)}
 
+. "${GIT_ROOT}/.envrc"
 . "${GIT_ROOT}/make/include/registry"
 
 BOSH_IMAGES=${BOSH_IMAGES:-$(fissile show image --docker-registry "${IMAGE_REGISTRY}" --docker-organization "${IMAGE_ORG}" --repository "${IMAGE_PREFIX}")}
