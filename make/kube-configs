@@ -4,14 +4,16 @@ set -o errexit -o nounset
 
 GIT_ROOT=${GIT_ROOT:-$(git rev-parse --show-toplevel)}
 
+# TODO: We currently skip memory limits for development purposes
+
 . "${GIT_ROOT}/make/include/registry"
 
 cd "$GIT_ROOT"
 . ${GIT_ROOT}/.envrc
 fissile build kube \
-    -k kube/ \
+    --kube-output-dir="${GIT_ROOT}/kube" \
+    --defaults-file="$(echo env/*.env | tr ' ' ',')" \
     --use-memory-limits=false \
     --docker-registry "${IMAGE_REGISTRY}" \
     --docker-organization "${IMAGE_ORG}" \
-    --repository "${IMAGE_PREFIX}" \
-    -D $(echo env/*.env | tr ' ' ',')
+    --repository "${IMAGE_PREFIX}"
