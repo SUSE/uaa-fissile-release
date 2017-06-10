@@ -68,7 +68,8 @@ command -v certstrap > /dev/null 2>&1 || {
     sleep 1
   done
   printf "\n"
-  go get github.com/square/certstrap
+  docker run --rm -v "${HOME}/bin":/out:rw golang:1.7 /usr/bin/env GOBIN=/out go get github.com/square/certstrap
+  sudo chown "$(id -un):$(id -gn)" "${HOME}/bin/certstrap"
 }
 
 # Certificate generation
