@@ -35,10 +35,4 @@ elif [ -n "${INTERNAL_CA_CERT:-}" ]; then
     printf "%b" "${INTERNAL_CA_CERT}" > "${ca_path}"/internalCA.crt
 fi
 
-if [ -n "${HCP_CA_CERT_FILE:-}" -a -r "${HCP_CA_CERT_FILE:-}" ]; then
-    cp "${HCP_CA_CERT_FILE}" "${ca_path}"/hcp-ca-cert.crt
-elif [ -n "${HCP_CA_CERT:-}" ]; then
-    printf "%b" "${HCP_CA_CERT}" > "${ca_path}"/hcp-ca-cert.crt
-fi
-
 update-ca-certificates
