@@ -30,7 +30,7 @@ PATCH
 
 echo -e "${setup_patch_galera}" | patch --force
 
-PATCH_DIR=/var/vcap/packages/mariadb/bin
+PATCH_DIR=$(dirname "$(ls /var/vcap/packages-src/*/bin/wsrep_sst_xtrabackup-v2)")
 
 cd "$PATCH_DIR"
 
