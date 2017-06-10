@@ -26,7 +26,9 @@ stampy "${GIT_ROOT}/uaa_metrics.csv" "$0" make-run::namespace end
 
 stampy "${GIT_ROOT}/uaa_metrics.csv" "$0" make-run::create start
 
-kubectl create --namespace="${NAMESPACE}" --filename="kube/bosh"
+kubectl create --namespace="${NAMESPACE}" \
+    --filename="kube/bosh" \
+    --filename="kube-test/exposed-ports.yml"
 
 stampy "${GIT_ROOT}/uaa_metrics.csv" "$0" make-run::create end
 
