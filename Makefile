@@ -12,7 +12,7 @@ releases:
 images:
 	${GIT_ROOT}/make/images
 
-kube-configs:
+kube-configs kube/bosh/uaa.yml:
 	${GIT_ROOT}/make/kube-configs
 
 package-kube:
@@ -23,3 +23,9 @@ publish:
 
 .PHONY: build certs releases images kube-configs package-kube publish
 
+
+run: kube/bosh/uaa.yml
+	${GIT_ROOT}/make/run
+
+stop:
+	${GIT_ROOT}/make/stop

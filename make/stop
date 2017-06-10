@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+
+set -o errexit
+
+GIT_ROOT=${GIT_ROOT:-$(git rev-parse --show-toplevel)}
+NAMESPACE="uaa"
+
+has_namespace() {
+    kubectl get namespace --output=name "${NAMESPACE}" >/dev/null 2>/dev/null
+}
+
+stampy "${GIT_ROOT}/uaa_metrics.csv" "$0" make-stop start
+if has_namespace ; then
+    kubectl delete namespace "${NAMESPACE}"
+fi
+stampy "${GIT_ROOT}/uaa_metrics.csv" "$0" make-stop 'done'
