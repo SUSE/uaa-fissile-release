@@ -1,0 +1,35 @@
+#!/bin/sh
+
+set -o errexit -o nounset
+
+GIT_ROOT=${GIT_ROOT:-$(git rev-parse --show-toplevel)}
+NAMESPACE="uaa"
+
+has_namespace() {
+    kubectl get namespace --output=name "${NAMESPACE}" >/dev/null 2>/dev/null
+}
+
+stampy "${GIT_ROOT}/uaa_metrics.csv" "$0" make-run start
+
+stampy "${GIT_ROOT}/uaa_metrics.csv" "$0" make-run::namespace start
+if has_namespace ; then
+    kubectl delete namespace "${NAMESPACE}"
+fi
+
+printf "Waiting for namespace %s to be deleted...\n" "${NAMESPACE}"
+while has_namespace ; do
+    sleep 1
+done
+
+kubectl create namespace "${NAMESPACE}"
+stampy "${GIT_ROOT}/uaa_metrics.csv" "$0" make-run::namespace end
+
+stampy "${GIT_ROOT}/uaa_metrics.csv" "$0" make-run::create start
+
+kubectl create --namespace="${NAMESPACE}" \
+    --filename="kube/bosh" \
+    --filename="kube-test/exposed-ports.yml"
+
+stampy "${GIT_ROOT}/uaa_metrics.csv" "$0" make-run::create end
+
+stampy "${GIT_ROOT}/uaa_metrics.csv" "$0" make-run 'done'

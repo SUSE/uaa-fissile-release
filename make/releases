@@ -5,6 +5,9 @@ set -o errexit -o nounset
 GIT_ROOT=${GIT_ROOT:-$(git rev-parse --show-toplevel)}
 
 cd "$GIT_ROOT"
-bosh create release --dir src/cf-mysql-release --force --name cf-mysql
-bosh create release --dir src/uaa-release --force --name uaa
-bosh create release --dir src/hcf-release --force --name hcf
+
+RUBY_VERSION=2.3.1 \
+    ${GIT_ROOT}/bin/create-release.sh  src/cf-mysql-release  cf-mysql
+
+${GIT_ROOT}/bin/create-release.sh  src/uaa-release  uaa
+${GIT_ROOT}/bin/create-release.sh  src/hcf-release  hcf

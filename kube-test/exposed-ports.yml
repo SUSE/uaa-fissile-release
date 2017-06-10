@@ -9,7 +9,7 @@ spec:
   ports:
   - name: uaa-ssl
     port: 2793
-    targetPort: 8443
+    targetPort: uaa-ssl
   externalIPs :
   - 192.168.77.77
   selector:

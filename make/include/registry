@@ -1,0 +1,7 @@
+#!/bin/sh
+
+set -o errexit -o nounset
+
+IMAGE_ORG=${IMAGE_ORG:-'splatform'}
+IMAGE_PREFIX=${IMAGE_PREFIX:-'uaa'}
+IMAGE_REGISTRY="${IMAGE_REGISTRY:+${IMAGE_REGISTRY%/}/}"
