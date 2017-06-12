@@ -65,7 +65,8 @@ roles:
         public: false
     healthcheck:
       slow_startup: true
-      url: http://container-ip:9200/
+      readiness:
+        url: http://container-ip:9200/
   configuration:
     templates:
       properties.cf_mysql.external_host: "((DOMAIN))"
@@ -109,10 +110,13 @@ roles:
         internal: 8443
         public: false
     healthcheck:
-      url: https://container-ip:8443/info
-      headers:
-        host: uaa
-        accept: application/json
+      readiness:
+        initial_delay: 1800
+        period: 60
+        url: https://container-ip:8443/info
+        headers:
+          host: uaa
+          accept: application/json
   configuration:
     templates:
       properties.uaadb.roles: '[{"name": "uaaadmin", "password": "((UAADB_PASSWORD))", "tag": "admin"}]'
