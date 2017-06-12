@@ -110,9 +110,10 @@ roles:
         internal: 8443
         public: false
     healthcheck:
-      readiness:
+      liveness:
         initial_delay: 1800
         period: 60
+      readiness:
         url: https://container-ip:8443/info
         headers:
           host: uaa
