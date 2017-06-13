@@ -7,3 +7,4 @@
 /src/*-release/dev_releases/
 /kube
 /*.zip
+uaa_metrics.csv
