@@ -9,7 +9,7 @@ GIT_ROOT=${GIT_ROOT:-$(git rev-parse --show-toplevel)}
 # TODO: We currently skip memory limits for development purposes
 
 cd "$GIT_ROOT"
-. ${GIT_ROOT}/.envrc
+
 fissile build kube \
     --kube-output-dir="${GIT_ROOT}/kube" \
     --defaults-file="$(echo env/*.env | tr ' ' ',')" \
