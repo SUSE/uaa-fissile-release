@@ -9,7 +9,8 @@ ARTIFACT=uaa-kube-${GIT_DESCRIBE}.zip
 
 rm ${GIT_ROOT}/${ARTIFACT} 2>/dev/null || true
 
-cd kube && zip -r9 ${GIT_ROOT}/${ARTIFACT} * \
-    ${NULL:-}
+cd kube
+cp -r ../kube-test .
+zip -r9 ${GIT_ROOT}/${ARTIFACT} * ${NULL:-}
 
 echo Generated ${ARTIFACT}
