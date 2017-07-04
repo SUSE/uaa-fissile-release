@@ -108,7 +108,7 @@ roles:
         protocol: TCP
         external: 2793
         internal: 8443
-        public: false
+        public: true
     healthcheck:
       liveness:
         initial_delay: 1800
@@ -127,6 +127,7 @@ configuration:
     description: >
       Base domain name of the UAA endpoint; `uaa.${DOMAIN}` must be correctly
       configured to point to this UAA instance
+    required: true
   - name: HCP_COMPONENT_INDEX
     type: environment
   - name: HCP_SERVICE_DOMAIN_SUFFIX
@@ -190,8 +191,6 @@ configuration:
   - name: UAA_ADMIN_CLIENT_SECRET
     secret: true
     immutable: true
-    generator:
-      type: Password
     description: The password of the admin client - a client named admin with uaa.admin as an authority.
   - name: UAA_SERVER_CERT
     secret: true

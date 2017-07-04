@@ -18,6 +18,9 @@ kube kube/bosh/uaa.yml:
 kube-dist:
 	${GIT_ROOT}/make/kube-dist
 
+helm:
+	${GIT_ROOT}/make/kube helm
+
 publish:
 	${GIT_ROOT}/make/publish
 
