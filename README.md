@@ -54,28 +54,67 @@ Required to create certificates. Requires golang.
 go get github.com/square/certstrap
 ```
 
+### stampy
+
+Used to write timing information to a file. This information can be used to identify
+slow parts of the process when trying to make things faster.
+
+Requires golang.
+```sh
+go get -d github.com/SUSE/stampy
+cd $GOPATH/src/github.com/SUSE/stampy
+make
+cp build/linux-amd64/stampy $GOBIN/stampy
+```
+
 ## Building
 
-1. Run `generate-certs.sh` to generate the SSL certificates required.  The
-    default options are fine.
+1. Get all submodules:
+  ```sh
+    git submodule update --init --recursive
+  ```
 
-2. Create the BOSH release for `cf-mysql`, `uaa`, and `hcf`:
-    ```
-    bosh create release --dir src/cf-mysql-release --force --name cf-mysql
-    bosh create release --dir src/uaa-release --force --name uaa
-    bosh create release --dir src/hcf-release --force --name hcf
+1. Load needed environment variables (optional, only if you don't use direnv):
+
+   ```sh
+     . .envrc
+   ```
+
+1. Generate the SSL certificates required:
+
+    ```sh
+      make certs
     ```
 
-3. Build fissile images
-    ```
-    STEMCELL=splatform/fissile-stemcell-opensuse:42.2-0.g58a22c9-28.16
-    fissile build packages --stemcell ${STEMCELL}
-    fissile build images   --stemcell ${STEMCELL}
-    ```
+1. Create the releases:
+
+   ```sh
+     make releases
+   ```
+
+1. Get the opensuse stemcell:
+
+   ```sh
+     docker pull $FISSILE_STEMCELL
+   ```
+
+1. Create a directory to write the release tarball into:
+
+   ```sh
+     mkdir -p output/splatform
+   ```
+
+1. Build fissile images:
+
+   ```sh
+   STEMCELL=splatform/fissile-stemcell-opensuse:42.2-0.g58a22c9-28.16
+   fissile build packages --stemcell ${STEMCELL}
+   fissile build images   --stemcell ${STEMCELL}
+   ```
 
 Or, more convenient
 
-    ```
+    ```sh
     make images
     ```
 
