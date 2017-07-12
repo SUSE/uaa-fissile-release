@@ -9,3 +9,5 @@
 /helm
 /*.zip
 uaa_metrics.csv
+/bosh/
+/helm/
