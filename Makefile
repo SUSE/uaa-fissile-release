@@ -18,10 +18,13 @@ kube kube/bosh/uaa.yml:
 kube-dist:
 	${GIT_ROOT}/make/kube-dist
 
+helm:
+	${GIT_ROOT}/make/kube helm
+
 publish:
 	${GIT_ROOT}/make/publish
 
-.PHONY: build certs releases images kube kube-dist publish
+.PHONY: build certs releases images kube kube-dist helm publish
 
 
 run: kube/bosh/uaa.yml
