@@ -11,3 +11,4 @@
 uaa_metrics.csv
 /bosh/
 /helm/
+/secrets/
