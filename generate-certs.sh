@@ -58,7 +58,7 @@ if test "${has_env}" = "no" ; then
 fi
 
 # Generate a random signing key passphrase
-signing_key_passphrase=$(head -c 32 /dev/urandom | xxd -ps -c 32)
+signing_key_passphrase=$(head -c32 /dev/urandom | base64)
 
 # build and install `certstrap` tool if it's not installed
 command -v certstrap > /dev/null 2>&1 || {
