@@ -192,6 +192,7 @@ configuration:
     secret: true
     immutable: true
     description: The password of the admin client - a client named admin with uaa.admin as an authority.
+    required: true
   - name: UAA_SERVER_CERT
     secret: true
     generator:
