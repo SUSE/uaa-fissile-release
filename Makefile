@@ -12,7 +12,7 @@ releases:
 images:
 	${GIT_ROOT}/make/images
 
-kube kube/bosh/uaa.yml:
+kube kube/bosh/uaa.yaml:
 	${GIT_ROOT}/make/kube
 
 kube-dist:
@@ -27,7 +27,7 @@ publish:
 .PHONY: build certs releases images kube kube-dist helm publish
 
 
-run: kube/bosh/uaa.yml
+run: kube/bosh/uaa.yaml
 	${GIT_ROOT}/make/run
 
 stop:
