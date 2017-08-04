@@ -154,8 +154,4 @@ instructions there.
     kubectl create namespace uaa
 
     kubectl create -n uaa -f kube/bosh/
-
-    # This will expose UAA for use; adjust the contents if you're not deploying
-    # to vagrant
-    kubectl create -n uaa -f kube-test/exposed-ports.yml
     ```
