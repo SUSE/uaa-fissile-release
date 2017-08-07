@@ -1,5 +1,7 @@
 #!/usr/bin/env make
+ifeq ($(GIT_ROOT),)
 GIT_ROOT:=$(shell git rev-parse --show-toplevel)
+endif
 
 build: certs releases images
 
