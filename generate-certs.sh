@@ -68,8 +68,20 @@ command -v certstrap > /dev/null 2>&1 || {
     sleep 1
   done
   printf "\n"
-  docker run --rm -v "${HOME}/bin":/out:rw golang:1.7 /usr/bin/env GOBIN=/out go get github.com/square/certstrap
-  sudo chown "$(id -un):$(id -gn)" "${HOME}/bin/certstrap"
+  if test -n "${CERTSTRAP_VERSION:-}" ; then
+    # Download the pre-built binary
+    OS="$(uname -s | tr '[:upper:]' '[:lower:]')"
+    url="https://cf-opensusefs2.s3.amazonaws.com/certstrap/certstrap-${CERTSTRAP_VERSION}.${OS}-amd64.tgz"
+    printf "Downloading from %s...\n" "${url}"
+    curl -L "${url}" | tar -xzC "${HOME}/bin" --overwrite certstrap
+  else
+    docker run --rm -v "${HOME}/bin":/out:rw golang:1.7 /usr/bin/env GOBIN=/out go get github.com/square/certstrap
+    sudo chown "$(id -un):$(id -gn)" "${HOME}/bin/certstrap"
+  fi
+  # Ensure that the certstrap we just dumped out is in the path
+  if ! command -v certstrap 2>/dev/null >/dev/null ; then
+    export PATH="${PATH}:${HOME}/bin"
+  fi
 }
 
 # Certificate generation
