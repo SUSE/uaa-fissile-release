@@ -25,7 +25,7 @@ load_env() {
 
 has_env=no
 
-while getopts e: opt ; do
+while getopts e:h opt ; do
     case "$opt" in
         e)
             if ! test -d "${OPTARG}" ; then
@@ -34,17 +34,16 @@ while getopts e: opt ; do
             fi
             load_env "${OPTARG}"
             ;;
+	h)
+            cat <<EOL
+Usage: ${0} <OUTPUT_PATH>
+EOL
+            exit 0
+            ;;
     esac
 done
 
 shift $((OPTIND - 1))
-
-if [[ "${1:-}" == "--help" ]]; then
-cat <<EOL
-Usage: generate_dev_certs.sh <OUTPUT_PATH>
-EOL
-exit 0
-fi
 
 output_path="${1:-}"
 
@@ -130,7 +129,7 @@ make_domains() {
         result="${result},${host_name}.${DOMAIN},*.${host_name}.${DOMAIN}"
     fi
     if test -n "${HCP_SERVICE_DOMAIN_SUFFIX:-}" ; then
-        result="${result},$(tr -d '[[:space:]]' <<EOF
+        result="${result},$(tr -d '[:space:]' <<EOF
         ${host_name}.${HCP_SERVICE_DOMAIN_SUFFIX},
         *.${host_name}.${HCP_SERVICE_DOMAIN_SUFFIX}
 EOF
