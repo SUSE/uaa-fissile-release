@@ -129,7 +129,7 @@ make_domains() {
         result="${result},${host_name}.${DOMAIN},*.${host_name}.${DOMAIN}"
     fi
     if test -n "${HCP_SERVICE_DOMAIN_SUFFIX:-}" ; then
-        result="${result},$(tr -d '[[:space:]]' <<EOF
+        result="${result},$(tr -d '[:space:]' <<EOF
         ${host_name}.${HCP_SERVICE_DOMAIN_SUFFIX},
         *.${host_name}.${HCP_SERVICE_DOMAIN_SUFFIX}
 EOF
