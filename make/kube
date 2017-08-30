@@ -6,7 +6,16 @@ GIT_ROOT=${GIT_ROOT:-$(git rev-parse --show-toplevel)}
 cd "${GIT_ROOT}"
 source .envrc
 
-ENV_FILES="$(echo env/*.env)"
+DOMAIN=${DOMAIN:-}
+DEFAULTS_ENV=env/defaults.env
+if test -n "${DOMAIN}"; then
+    TMP="$(mktemp -d)"
+    cp "${DEFAULTS_ENV}" "${TMP}"
+    trap "rm -rf ${TMP}" EXIT
+    DEFAULTS_ENV="${TMP}/$(basename "${DEFAULTS_ENV}")"
+    sed -i "s/^DOMAIN=.*/DOMAIN=${DOMAIN}/" "${DEFAULTS_ENV}"
+fi
+ENV_FILES="env/certs.env $DEFAULTS_ENV"
 
 CREATE_HELM_CHART=false
 BUILD_TARGET=kube
