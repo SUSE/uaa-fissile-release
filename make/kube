@@ -26,5 +26,5 @@ fissile build "${BUILD_TARGET}" \
     --use-memory-limits=false
 
 if [ "${BUILD_TARGET}" = "helm" ]; then
-    cp Chart.yaml ./helm
+    cp Chart.yaml "${BUILD_TARGET}"
 fi
