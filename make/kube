@@ -24,3 +24,7 @@ fissile build "${BUILD_TARGET}" \
     --output-dir="${BUILD_TARGET}" \
     --defaults-file="$(echo "${ENV_FILES}" | tr ' ' ,)" \
     --use-memory-limits=false
+
+if [ "${BUILD_TARGET}" = "helm" ]; then
+    cp Chart.yaml ./helm
+fi
