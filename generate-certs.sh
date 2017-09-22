@@ -6,6 +6,16 @@ set -o errexit -o nounset
 
 load_env() {
     local dir="${1}"
+    DOMAIN=${DOMAIN:-}
+    if test -n "${DOMAIN}"; then
+        tmp=$(mktemp -d)
+        cp -r "${dir}/"*.env "${tmp}"
+        trap "rm -rf ${tmp}" EXIT
+        if test -f "${tmp}/defaults.env"; then
+            sed -i "s/^DOMAIN=.*/DOMAIN=${DOMAIN}/" "${tmp}/defaults.env"
+        fi
+        dir="${tmp}"
+    fi
     local files=($(find "${dir}" -maxdepth 1 -name '*.env' '(' -name certs.env -o -print ')' | sort))
     if test "${#files[@]}" -lt 1 ; then
         echo "No environment files found in ${dir}" >&2
