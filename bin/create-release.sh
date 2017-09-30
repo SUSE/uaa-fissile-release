@@ -2,12 +2,7 @@
 set -o errexit
 set -o nounset
 
-# prevent cd from printing the directory it changes to. This breaks
-# cd/pwd constructions (See **).
-unset CDPATH
-
-# (**)
-ROOT="$( cd "$( dirname "${BASH_SOURCE[0]}" )/../" && pwd )"
+ROOT="$( unset CDPATH ; cd "$( dirname "${BASH_SOURCE[0]}" )/../" && pwd )"
 
 if [[ $# -lt 2 || -z "${1:-}" || -z "${2:-}" ]]; then
   cat <<HELP
@@ -110,7 +105,6 @@ rm -rf ${ROOT}/${release_path}/dev_releases
 if find "${ROOT}/${release_path}/blobs/" -type l >/dev/null 2>/dev/null; then
   # Migrating from BOSH CLI v1 (ruby) to BOSH CLI v2 (golang)
   docker run \
-    --interactive \
     --rm \
     --volume "${FISSILE_CACHE_DIR}":/bosh-cache \
     --volume "${ROOT}/:${ROOT}/" \
@@ -125,7 +119,6 @@ if find "${ROOT}/${release_path}/blobs/" -type l >/dev/null 2>/dev/null; then
 fi
 
 docker run \
-    --interactive \
     --rm \
     --volume "${FISSILE_CACHE_DIR}":/bosh-cache \
     --volume "${ROOT}/:${ROOT}/" \
