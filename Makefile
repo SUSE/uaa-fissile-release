@@ -1,5 +1,7 @@
 #!/usr/bin/env make
 
+.PHONY: build certs releases images kube kube-dist helm publish run stop dist generate
+
 build: releases images
 
 certs:
@@ -11,7 +13,7 @@ releases:
 images:
 	make/images
 
-kube kube/bosh/uaa.yaml:
+kube:
 	make/kube
 
 kube-dist:
@@ -22,9 +24,6 @@ helm:
 
 publish:
 	make/publish
-
-.PHONY: build certs releases images kube kube-dist helm publish
-
 
 run:
 	make/run
