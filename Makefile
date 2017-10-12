@@ -1,41 +1,37 @@
 #!/usr/bin/env make
-ifeq ($(GIT_ROOT),)
-GIT_ROOT:=$(shell git rev-parse --show-toplevel)
-endif
 
 build: releases images
 
 certs:
-	${GIT_ROOT}/generate-certs.sh
+	generate-certs.sh
 
 releases:
-	${GIT_ROOT}/make/releases
+	make/releases
 
 images:
-	${GIT_ROOT}/make/images
+	make/images
 
-kube kube/bosh/uaa.yaml: certs
-	${GIT_ROOT}/make/kube
+kube kube/bosh/uaa.yaml:
+	make/kube
 
 kube-dist:
-	${GIT_ROOT}/make/kube-dist
+	make/kube-dist
 
-helm: certs
-	${GIT_ROOT}/make/kube helm
+helm:
+	make/kube helm
 
 publish:
-	${GIT_ROOT}/make/publish
+	make/publish
 
 .PHONY: build certs releases images kube kube-dist helm publish
 
 
 run:
-	${GIT_ROOT}/make/run
+	make/run
 
 stop:
-	${GIT_ROOT}/make/stop
+	make/stop
 
 dist: kube-dist
 
 generate: kube
-
