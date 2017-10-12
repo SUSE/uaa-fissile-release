@@ -3,7 +3,7 @@
 build: releases images
 
 certs:
-	generate-certs.sh
+	./generate-certs.sh
 
 releases:
 	make/releases
