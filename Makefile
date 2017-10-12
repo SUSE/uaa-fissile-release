@@ -11,13 +11,13 @@ releases:
 images:
 	make/images
 
-kube kube/bosh/uaa.yaml: certs
+kube kube/bosh/uaa.yaml:
 	make/kube
 
 kube-dist:
 	make/kube-dist
 
-helm: certs
+helm:
 	make/kube helm
 
 publish:
