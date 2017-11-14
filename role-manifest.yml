@@ -122,6 +122,18 @@ roles:
     templates:
       properties.uaadb.roles: '[{"name": "uaaadmin", "password": "((UAADB_PASSWORD))", "tag": "admin"}]'
 configuration:
+  auth:
+    roles:
+      configgin-role:
+      - apiGroups: [""]
+        resources: [pods]
+        verbs: [get, list, patch]
+      - apiGroups: [""]
+        resources: [services]
+        verbs: [get]
+    accounts:
+      default:
+        roles: [configgin-role]
   variables:
   - name: DOMAIN
     description: >
