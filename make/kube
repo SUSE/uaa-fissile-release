@@ -40,10 +40,14 @@ fissile build "${BUILD_TARGET}" \
     --use-memory-limits=false
 
 if [ "${BUILD_TARGET}" = "helm" ]; then
+    if [[ $FISSILE_STEMCELL =~ ^.*fissile-stemcell-opensuse.*$ ]] ; then
+      chart_name_suffix="-opensuse"
+    fi
+
     cat > "${BUILD_TARGET}/Chart.yaml" << EOF
 apiVersion: v1
 description: A Helm chart for SUSE UAA
-name: uaa
+name: uaa${chart_name_suffix}
 version: ${APP_VERSION}
 EOF
 fi
