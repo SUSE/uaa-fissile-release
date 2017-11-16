@@ -6,6 +6,11 @@ GIT_ROOT=${GIT_ROOT:-$(git rev-parse --show-toplevel)}
 cd "${GIT_ROOT}"
 source .envrc
 
+if [ -z "${APP_VERSION:-}" ]; then
+  echo "APP_VERSION is not set"
+  exit 1
+fi
+
 DOMAIN=${DOMAIN:-}
 DEFAULTS_ENV=env/defaults.env
 if test -n "${DOMAIN}"; then
@@ -35,5 +40,10 @@ fissile build "${BUILD_TARGET}" \
     --use-memory-limits=false
 
 if [ "${BUILD_TARGET}" = "helm" ]; then
-    cp Chart.yaml "${BUILD_TARGET}"
+    cat > "${BUILD_TARGET}/Chart.yaml" << EOF
+apiVersion: v1
+description: A Helm chart for SUSE UAA
+name: uaa
+version: ${APP_VERSION}
+EOF
 fi
