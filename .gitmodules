@@ -4,3 +4,7 @@
 [submodule "src/cf-mysql-release"]
 	path = src/cf-mysql-release
 	url = https://github.com/cloudfoundry/cf-mysql-release.git
+[submodule "src/hcf-release/src/github.com/SUSE/scf-secret-generator"]
+	path = src/hcf-release/src/github.com/SUSE/scf-secret-generator
+	url = https://github.com/SUSE/scf-secret-generator
+	branch = fill-in-generate-passwords
