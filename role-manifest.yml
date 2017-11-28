@@ -139,6 +139,9 @@ roles:
     virtual-cpus: 1
     exposed-ports: []
     service-account: secret-generator
+  configuration:
+    templates:
+      properties.hcf.secrets.variables: '((DOMAIN))((KUBE_SIZING_UAA_COUNT))'
 configuration:
   auth:
     roles:
@@ -167,9 +170,29 @@ configuration:
   - name: HCP_COMPONENT_INDEX
     type: environment
   - name: HCP_SERVICE_DOMAIN_SUFFIX
+  - name: INTERNAL_CA_CERT
+    secret: true
+    generator:
+      id: cacert
+      type: CACertificate
+      value_type: certificate
+    description: PEM-encoded CA certificate used to sign the TLS certificate used by all components to secure their communications.
+    required: true
+  - name: INTERNAL_CA_KEY
+    secret: true
+    generator:
+      id: cacert
+      type: CACertificate
+      value_type: private_key
+    description: PEM-encoded CA key.
+    required: true
   - name: JWT_SIGNING_PEM
   - name: KUBERNETES_NAMESPACE
     type: environment
+  - name: KUBE_SIZING_UAA_COUNT
+    description: >
+      The number of uaa replicas deployed.
+      This value is set automatically by the helm charts of UAA.
   - name: MONIT_PASSWORD
     secret: true
     immutable: true
@@ -209,6 +232,8 @@ configuration:
       id: "saml_serviceprovider_cert"
       type: Certificate
       value_type: certificate
+      subject_names:
+      - saml_serviceprovider
     description: PEM-encoded certificate
   - name: SAML_SERVICEPROVIDER_KEY
     secret: true
@@ -216,7 +241,6 @@ configuration:
       id: "saml_serviceprovider_cert"
       type: Certificate
       value_type: private_key
-      key_length: 4096
     description: PEM-encoded key.
   - name: UAADB_PASSWORD
     secret: true
@@ -235,6 +259,7 @@ configuration:
       id: "uaa_cert"
       type: Certificate
       value_type: certificate
+      role_name: uaa
     description: The server's ssl certificate. The default is a self-signed certificate and should always be replaced for production deployments.
   - name: UAA_SERVER_KEY
     secret: true
@@ -242,7 +267,6 @@ configuration:
       id: "uaa_cert"
       type: Certificate
       value_type: private_key
-      key_length: 4096
     description: The server's ssl private key. Only passphrase-less keys are supported.
   templates:
     properties.fissile.monit.password: '"((MONIT_PASSWORD))"'
@@ -253,7 +277,7 @@ configuration:
     properties.uaa.clients.default_zone_admin.secret: '"((UAA_ADMIN_CLIENT_SECRET))"'
     properties.uaa.clients: '{"default_zone_admin": {"secret": "((UAA_ADMIN_CLIENT_SECRET))", "authorized-grant-types": "client_credentials", "scope": "uaa.admin", "authorities": "uaa.admin"}}'
     properties.uaa.jwt.policy.keys.default.signingKey: ((JWT_SIGNING_PEM))
-    properties.uaa.sslCertificate: ((UAA_SERVER_CERT))
-    properties.uaa.sslPrivateKey: ((UAA_SERVER_KEY))
+    properties.uaa.sslCertificate: ((UAA_SERVER_CERT))((#INTERNAL_CA_CERT))((/INTERNAL_CA_CERT))
+    properties.uaa.sslPrivateKey: ((UAA_SERVER_KEY))((#INTERNAL_CA_KEY))((/INTERNAL_CA_KEY))
     properties.uaa.url: "https://uaa.((DOMAIN)):2793"
     properties.uaa.zones.internal.hostnames: '["uaa","uaa.((KUBERNETES_NAMESPACE))","uaa.((KUBERNETES_NAMESPACE)).svc","uaa.((HCP_SERVICE_DOMAIN_SUFFIX))"]'

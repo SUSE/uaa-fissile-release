@@ -180,6 +180,7 @@ escape_file_contents() {
     sed 's@$@\\@' < "$1" | tr '\n' 'n'
 }
 INTERNAL_CA_CERT=$(escape_file_contents "${internal_certs_dir}/internalCA.crt")
+INTERNAL_CA_KEY=$(escape_file_contents "${internal_certs_dir}/internalCA.key")
 JWT_SIGNING_PEM=$(escape_file_contents "${certs_path}/jwt_signing.pem")
 JWT_SIGNING_PUB=$(escape_file_contents "${certs_path}/jwt_signing.pub")
 SAML_SERVICEPROVIDER_CERT=$(escape_file_contents "${internal_certs_dir}/saml_serviceprovider.crt")
@@ -191,6 +192,7 @@ popd &>/dev/null
 
 cat <<ENVS > "${output_path}"
 INTERNAL_CA_CERT=${INTERNAL_CA_CERT}
+INTERNAL_CA_KEY=${INTERNAL_CA_KEY}
 JWT_SIGNING_PEM=${JWT_SIGNING_PEM}
 JWT_SIGNING_PUB=${JWT_SIGNING_PUB}
 SAML_SERVICEPROVIDER_CERT=${SAML_SERVICEPROVIDER_CERT}
