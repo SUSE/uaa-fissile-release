@@ -141,7 +141,7 @@ roles:
     service-account: secret-generator
   configuration:
     templates:
-      properties.hcf.secrets.variables: '((KUBE_SIZING_UAA_COUNT))'
+      properties.hcf.secrets.variables: '((DOMAIN))((KUBE_SIZING_UAA_COUNT))'
 configuration:
   auth:
     roles:
