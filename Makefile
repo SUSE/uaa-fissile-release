@@ -1,6 +1,6 @@
 #!/usr/bin/env make
 
-.PHONY: build certs releases compile images kube kube-dist helm publish run stop dist generate
+.PHONY: prep build certs releases compile images kube kube-dist helm publish run stop dist generate mysql-release uaa-release hcf-release
 
 ########## VAGRANT VM TARGETS ##########
 
