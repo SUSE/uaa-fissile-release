@@ -10,5 +10,5 @@ templates:
   run.erb: bin/run
 
 properties:
-  hcf.secrets.variables:
+  uaa.secrets.variables:
     description: "A dummy variable to hold references to all config variables needed for secrets generation"
