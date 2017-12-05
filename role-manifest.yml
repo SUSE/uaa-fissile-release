@@ -171,6 +171,7 @@ configuration:
   - name: HCP_COMPONENT_INDEX
     type: environment
   - name: HCP_SERVICE_DOMAIN_SUFFIX
+  # INTERNAL_CA_CERT (id: cacert) is the CA used to sign all internal certs
   - name: INTERNAL_CA_CERT
     secret: true
     generator:
@@ -187,7 +188,24 @@ configuration:
       value_type: private_key
     description: PEM-encoded CA key.
     required: true
-  - name: JWT_SIGNING_PEM
+  # JWT_SIGNING_CERT is not used at all; but the secrets generator fails if we try to generate a key without a cert
+  - name: JWT_SIGNING_CERT
+    secret: true
+    generator:
+      id: jwtsigningkey
+      type: CACertificate
+      value_type: certificate
+    description: PEM-encoded JWT certificate.
+    required: true
+  # JWT_SIGNING_KEY is an RSA key; we don't have a specific generator type for it, so abuse the CA cert generator
+  - name: JWT_SIGNING_KEY
+    secret: true
+    generator:
+      id: jwtsigningkey
+      type: CACertificate
+      value_type: private_key
+    description: PEM-encoded JWT signing key.
+    required: true
   - name: KUBERNETES_NAMESPACE
     type: environment
   - name: KUBE_SIZING_UAA_COUNT
@@ -274,7 +292,9 @@ configuration:
     properties.uaa.admin.client_secret: '"((UAA_ADMIN_CLIENT_SECRET))"'
     properties.uaa.clients.default_zone_admin.secret: '"((UAA_ADMIN_CLIENT_SECRET))"'
     properties.uaa.clients: '{"default_zone_admin": {"secret": "((UAA_ADMIN_CLIENT_SECRET))", "authorized-grant-types": "client_credentials", "scope": "uaa.admin", "authorities": "uaa.admin"}}'
-    properties.uaa.jwt.policy.keys.default.signingKey: ((JWT_SIGNING_PEM))
+    # Dummy reference to JWT_SIGNING_CERT so that fissile validator doesn't complain that it is not being used
+    properties.uaa.jwt.policy.keys.default.signingKey: ((JWT_SIGNING_KEY))((#JWT_SIGNING_CERT))((/JWT_SIGNING_CERT))
+    # Save INTERNAL_CA cert and key in the kube secrets, so that a future update can use them to sign additional certs
     properties.uaa.sslCertificate: ((UAA_SERVER_CERT))((#INTERNAL_CA_CERT))((/INTERNAL_CA_CERT))
     properties.uaa.sslPrivateKey: ((UAA_SERVER_KEY))((#INTERNAL_CA_KEY))((/INTERNAL_CA_KEY))
     properties.uaa.url: "https://uaa.((DOMAIN)):2793"

@@ -48,12 +48,6 @@ yet compatible with the golang BOSH v2.
 
 [BOSH cli]: https://rubygems.org/gems/bosh_cli
 
-### certstrap
-Required to create certificates. Requires golang.
-```sh
-go get github.com/square/certstrap
-```
-
 ### stampy
 
 Used to write timing information to a file. This information can be used to identify
