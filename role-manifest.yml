@@ -16,6 +16,8 @@ roles:
     release_name: hcf
   - name: mysql
     release_name: cf-mysql
+    provides:
+      mysql: {}
   processes:
   - name: mariadb_ctrl
   - name: galera-healthcheck
@@ -73,7 +75,6 @@ roles:
       properties.cf_mysql.mysql.advertise_host: mysql-((HCP_COMPONENT_INDEX)).mysql-pod
       properties.cf_mysql.mysql.admin_password: "((MYSQL_ADMIN_PASSWORD))"
       properties.cf_mysql.mysql.cluster_health.password: '((MYSQL_CLUSTER_HEALTH_PASSWORD))'
-      properties.cf_mysql.mysql.cluster_ips: '((MYSQL_HCF_CLUSTER_IPS))((#MYSQL_HCF_CLUSTER_CONFIG_REVISION))((/MYSQL_HCF_CLUSTER_CONFIG_REVISION))'
       properties.cf_mysql.mysql.galera_healthcheck.db_password: "((MYSQL_ADMIN_PASSWORD))"
       properties.cf_mysql.mysql.galera_healthcheck.endpoint_password: "((MYSQL_GALERA_HEALTHCHECK_ENDPOINT_PASSWORD))"
       properties.cf_mysql.mysql.seeded_databases: '[{"name":"uaadb", "username": "uaaadmin", "password":"((UAADB_PASSWORD))"}]'
@@ -221,12 +222,6 @@ configuration:
       type: Password
     description: The password used to contact the sidecar endpoints via Basic Auth.
     required: true
-  - name: MYSQL_HCF_CLUSTER_CONFIG_REVISION
-    default: 0
-    description: An indicator to increment when changing the number of MySQL hosts in the cluster, to properly trigger component restarts.
-    required: true
-  - name: MYSQL_HCF_CLUSTER_IPS
-    type: environment
   - name: SAML_SERVICEPROVIDER_CERT
     secret: true
     generator:
