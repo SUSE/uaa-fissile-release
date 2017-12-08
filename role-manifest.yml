@@ -255,6 +255,9 @@ configuration:
       type: Certificate
       value_type: certificate
       role_name: uaa
+      subject_names:
+      - "uaa.{{.DOMAIN}}"
+      - "*.uaa.{{.DOMAIN}}"
     description: The server's ssl certificate. The default is a self-signed certificate and should always be replaced for production deployments.
   - name: UAA_SERVER_KEY
     secret: true
