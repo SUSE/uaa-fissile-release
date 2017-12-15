@@ -1,6 +1,6 @@
 ---
 name: patch-properties
-description: Dummy BOSH job used to host parameters that are used in HCF patches for upstream bugs
+description: Dummy BOSH job used to host parameters that are used in patches for upstream bugs
 
 templates:
   run.erb: bin/run

@@ -2,7 +2,7 @@
 
 # This installs certificate authorities:
 # - if available, the internal CA used to identify the components in the cluster
-# - if available, the CA used for UAA (from HCP)
+# - if available, the CA used for UAA (from the chosen backplane)
 
 # This file is (sometimes) sourced as an environment script, as it is required by
 # `fetch_uaa_verification_key.sh`, which itself must be an enviroment script.

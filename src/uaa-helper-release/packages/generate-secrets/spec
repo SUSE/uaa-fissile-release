@@ -4,4 +4,4 @@ dependencies:
   - golang1.8
 files:
   - github.com/SUSE/scf-secret-generator/**/*
-  - hcf-config/role-manifest.yml
+  - uaa-config/role-manifest.yml
