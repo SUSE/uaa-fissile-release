@@ -138,7 +138,7 @@ roles:
     service-account: secret-generator
   configuration:
     templates:
-      properties.uaa.secrets.variables: '((DOMAIN))((KUBE_SIZING_UAA_COUNT))'
+      properties.uaa.secrets.variables: '((DOMAIN))'
 configuration:
   auth:
     roles:
@@ -208,10 +208,6 @@ configuration:
     type: environment
   - name: KUBE_SERVICE_DOMAIN_SUFFIX
     type: environment
-  - name: KUBE_SIZING_UAA_COUNT
-    description: >
-      The number of uaa replicas deployed.
-      This value is set automatically by the helm charts of UAA.
   - name: MONIT_PASSWORD
     secret: true
     immutable: true
