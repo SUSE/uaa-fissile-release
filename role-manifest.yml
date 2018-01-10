@@ -241,8 +241,6 @@ configuration:
       id: "saml_serviceprovider_cert"
       type: Certificate
       value_type: certificate
-      subject_names:
-      - saml_serviceprovider
     description: PEM-encoded certificate
   - name: SAML_SERVICEPROVIDER_KEY
     secret: true
