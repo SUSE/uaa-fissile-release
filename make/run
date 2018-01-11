@@ -38,6 +38,7 @@ DEFAULTS_ENV=env/defaults.env
 if test -n "${DOMAIN}"; then
     TMP="$(mktemp -d)"
     cp "${DEFAULTS_ENV}" "${TMP}"
+    # shellcheck disable=SC2064
     trap "rm -rf ${TMP}" EXIT
     DEFAULTS_ENV="${TMP}/$(basename "${DEFAULTS_ENV}")"
     sed -i "s/^DOMAIN=.*/DOMAIN=${DOMAIN}/" "${DEFAULTS_ENV}"
@@ -49,8 +50,7 @@ helm install helm \
      --namespace "${NAMESPACE}" \
      --set "env.DOMAIN=${DOMAIN}" \
      --set "env.UAA_ADMIN_CLIENT_SECRET=${UAA_ADMIN_CLIENT_SECRET}" \
-     --set "kube.external_ip=$(dig +short ${DOMAIN})" \
-     --set "kube.auth=rbac"
+     --set "kube.external_ip=$(dig +short "${DOMAIN}")"
 
 stampy "${GIT_ROOT}/uaa_metrics.csv" "$0" make-run::create end
 
