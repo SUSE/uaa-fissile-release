@@ -6,6 +6,7 @@ roles:
   - scripts/chown_vcap_store.sh
   - scripts/patches/fix_mysql_advertise_ip.sh
   - scripts/patches/enable_mysql_galera_bootstrap.sh
+  - scripts/forward_logfiles.sh
   jobs:
   - name: global-properties # needs to be first so images use it for processing monit templates
     release_name: uaa-helper
@@ -69,16 +70,19 @@ roles:
   configuration:
     templates:
       properties.cf_mysql.external_host: "((DOMAIN))"
-      properties.cf_mysql.mysql.advertise_host: mysql-((KUBE_COMPONENT_INDEX)).mysql-pod
       properties.cf_mysql.mysql.admin_password: "((MYSQL_ADMIN_PASSWORD))"
+      properties.cf_mysql.mysql.advertise_host: mysql-((KUBE_COMPONENT_INDEX)).mysql-pod
       properties.cf_mysql.mysql.cluster_health.password: '((MYSQL_CLUSTER_HEALTH_PASSWORD))'
       properties.cf_mysql.mysql.galera_healthcheck.db_password: "((MYSQL_ADMIN_PASSWORD))"
       properties.cf_mysql.mysql.galera_healthcheck.endpoint_password: "((MYSQL_GALERA_HEALTHCHECK_ENDPOINT_PASSWORD))"
       properties.cf_mysql.mysql.seeded_databases: '[{"name":"uaadb", "username": "uaaadmin", "password":"((UAADB_PASSWORD))"}]'
 - name: uaa
+  environment_scripts:
+  - scripts/configure-HA-hosts.sh
   scripts:
   - scripts/authorize_internal_ca.sh
   - scripts/patches/fix_uaa_monit_timeout.sh
+  - scripts/forward_logfiles.sh
   jobs:
   - name: global-properties # needs to be first so images use it for processing monit templates
     release_name: uaa-helper
@@ -284,8 +288,8 @@ configuration:
     properties.login.saml.serviceProviderKey: '"((SAML_SERVICEPROVIDER_KEY))"'
     properties.login.url: "https://login.((DOMAIN)):2793"
     properties.uaa.admin.client_secret: '"((UAA_ADMIN_CLIENT_SECRET))"'
-    properties.uaa.clients.default_zone_admin.secret: '"((UAA_ADMIN_CLIENT_SECRET))"'
     properties.uaa.clients: '{"default_zone_admin": {"secret": "((UAA_ADMIN_CLIENT_SECRET))", "authorized-grant-types": "client_credentials", "scope": "uaa.admin", "authorities": "uaa.admin"}}'
+    properties.uaa.clients.default_zone_admin.secret: '"((UAA_ADMIN_CLIENT_SECRET))"'
     # Dummy reference to JWT_SIGNING_CERT so that fissile validator doesn't complain that it is not being used
     properties.uaa.jwt.policy.keys.default.signingKey: ((JWT_SIGNING_KEY))((#JWT_SIGNING_CERT))((/JWT_SIGNING_CERT))
     # Save INTERNAL_CA cert and key in the kube secrets, so that a future update can use them to sign additional certs
