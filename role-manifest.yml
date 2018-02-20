@@ -159,7 +159,7 @@ configuration:
       secrets-role:
       - apiGroups: [""]
         resources: [secrets]
-        verbs: [create, get, list, patch, update]
+        verbs: [create, get, list, patch, update, delete]
     accounts:
       default:
         roles: [configgin-role]

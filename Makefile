@@ -16,6 +16,9 @@ run:
 stop:
 	make/stop
 
+upgrade:
+	make/upgrade
+
 ########## BOSH RELEASE TARGETS ##########
 
 mysql-release:
