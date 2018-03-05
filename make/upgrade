@@ -13,7 +13,7 @@ GIT_ROOT=${GIT_ROOT:-$(git rev-parse --show-toplevel)}
 cd "${GIT_ROOT}"
 
 # Argument? (**)
-RELEASE=$(helm list -d -r --max 1 --namespace "${NAMESPACE}" -q | tail -n 1)
+RELEASE=$(helm list --date --reverse --max 1 --namespace "${NAMESPACE}" -q | tail -n 1)
 echo Upgrading ${NAMESPACE} release \"${RELEASE}\" ...
 
 stampy "${GIT_ROOT}/uaa_metrics.csv" "$0" make-run start
