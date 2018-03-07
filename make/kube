@@ -35,11 +35,9 @@ fi
 
 rm -rf "${BUILD_TARGET}"
 
-# TODO: We currently skip memory limits for development purposes
 fissile build "${BUILD_TARGET}" \
     --output-dir="${BUILD_TARGET}" \
     --defaults-file="$(echo "${ENV_FILES}" | tr ' ' ,)" \
-    --use-memory-limits=false \
     "${USE_SECRETS_GENERATOR}"
 
 if [ "${BUILD_TARGET}" = "helm" ]; then

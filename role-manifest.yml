@@ -30,7 +30,7 @@ roles:
         tag: mysql-data
         size: 20
     shared-volumes: []
-    memory: 3072
+    memory: 1779
     virtual-cpus: 2
     exposed-ports:
       - name: 'mysql'
@@ -98,7 +98,7 @@ roles:
     capabilities: []
     persistent-volumes: []
     shared-volumes: []
-    memory: 2048
+    memory: 2205
     virtual-cpus: 2
     exposed-ports:
       - name: uaa
