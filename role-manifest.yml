@@ -144,7 +144,7 @@ roles:
     service-account: secret-generator
   configuration:
     templates:
-      properties.uaa.secrets.variables: '((DOMAIN))'
+      properties.uaa.secrets.variables: '((DOMAIN))((KUBE_SECRETS_GENERATION_COUNTER))((KUBE_SECRETS_GENERATION_NAME))'
 configuration:
   auth:
     roles:
@@ -160,7 +160,7 @@ configuration:
         verbs: [get]
       secrets-role:
       - apiGroups: [""]
-        resources: [secrets]
+        resources: [configmaps ,secrets]
         verbs: [create, get, list, patch, update, delete]
     accounts:
       default:
@@ -211,6 +211,10 @@ configuration:
   - name: KUBERNETES_NAMESPACE
     type: environment
   - name: KUBE_COMPONENT_INDEX
+    type: environment
+  - name: KUBE_SECRETS_GENERATION_COUNTER
+    type: environment
+  - name: KUBE_SECRETS_GENERATION_NAME
     type: environment
   - name: KUBE_SERVICE_DOMAIN_SUFFIX
     type: environment
