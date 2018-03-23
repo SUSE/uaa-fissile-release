@@ -24,12 +24,10 @@ ENV_FILES="$DEFAULTS_ENV"
 
 CREATE_HELM_CHART=false
 BUILD_TARGET=kube
-USE_SECRETS_GENERATOR=
 
 if [ "${1:-}" = "helm" ]; then
     CREATE_HELM_CHART=true
     BUILD_TARGET=helm
-    USE_SECRETS_GENERATOR=--use-secrets-generator
     ENV_FILES=
 fi
 
@@ -37,8 +35,7 @@ rm -rf "${BUILD_TARGET}"
 
 fissile build "${BUILD_TARGET}" \
     --output-dir="${BUILD_TARGET}" \
-    --defaults-file="$(echo "${ENV_FILES}" | tr ' ' ,)" \
-    "${USE_SECRETS_GENERATOR}"
+    --defaults-file="$(echo "${ENV_FILES}" | tr ' ' ,)"
 
 if [ "${BUILD_TARGET}" = "helm" ]; then
     chart_name_suffix=""
