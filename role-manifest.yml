@@ -1,5 +1,53 @@
 ---
 roles:
+- name: mysql-proxy
+  scripts:
+  - scripts/forward_logfiles.sh
+  jobs:
+  - name: global-properties # needs to be first so images use it for processing monit templates
+    release_name: uaa-helper
+  - name: patch-properties
+    release_name: uaa-helper
+  - name: proxy
+    release_name: cf-mysql
+    provides:
+      proxy: {}
+  processes:
+  - name: cf-mysql-route-registrar
+  - name: switchboard
+  run:
+    scaling:
+      min: 1
+      max: 1
+      # mysql-proxy should be active/passive, but it looks like
+      # it is round-robin right now, which doesn't work
+      # ha: 2
+    capabilities: []
+    persistent-volumes: []
+    shared-volumes: []
+    memory: 63
+    virtual-cpus: 2
+    exposed-ports:
+    - name: mysql-proxy
+      protocol: TCP
+      internal: 3306
+    - name: api
+      protocol: TCP
+      internal: 80
+    - name: healthcheck
+      protocol: TCP
+      internal: 1936
+    healthcheck:
+      readiness:
+        url: http://container-ip:1936/
+  configuration:
+    templates:
+      properties.cf_mysql.external_host: ((DOMAIN))
+      properties.cf_mysql.mysql.admin_password: ((MYSQL_ADMIN_PASSWORD))
+      properties.cf_mysql.mysql.cluster_health.password: ((MYSQL_CLUSTER_HEALTH_PASSWORD))
+      properties.cf_mysql.mysql.galera_healthcheck.db_password: ((MYSQL_ADMIN_PASSWORD))
+      properties.cf_mysql.mysql.galera_healthcheck.endpoint_password: ((MYSQL_GALERA_HEALTHCHECK_ENDPOINT_PASSWORD))
+      properties.cf_mysql.proxy.api_password: ((MYSQL_PROXY_ADMIN_PASSWORD))
 - name: mysql
   scripts:
   - scripts/create_mysql_data_tmp.sh
@@ -254,6 +302,13 @@ configuration:
     generator:
       type: Password
     description: The password used to contact the sidecar endpoints via Basic Auth.
+    required: true
+  - name: MYSQL_PROXY_ADMIN_PASSWORD
+    secret: true
+    immutable: true
+    generator:
+      type: Password
+    description: The password for Basic Auth used to secure the MySQL proxy API.
     required: true
   - name: SAML_SERVICEPROVIDER_CERT
     secret: true
