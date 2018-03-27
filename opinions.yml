@@ -6,6 +6,10 @@ properties:
       galera_healthcheck:
         endpoint_username: galera_healthcheck_bootstrap_user
       max_open_files: 1500
+    proxy:
+      api_force_https: false
+      api_username: 'mysql_proxy'
+      healthcheck_timeout_millis: 30000
   fissile:
     monit:
       user: admin
@@ -16,7 +20,7 @@ properties:
         active_key_id: default
     logging_level: INFO
   uaadb:
-    address: mysql
+    address: mysql-proxy
     databases:
     - name: uaadb
       tag: uaa
