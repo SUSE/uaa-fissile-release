@@ -324,12 +324,6 @@ configuration:
       type: Certificate
       value_type: private_key
     description: PEM-encoded key.
-  - name: UAADB_PASSWORD
-    secret: true
-    immutable: true
-    generator:
-      type: Password
-    description: The password for access to the UAA database.
   - name: SCF_LOG_HOST
     internal: true
     description: The log destination to talk to. This has to point to a syslog server.
@@ -341,6 +335,12 @@ configuration:
     default: tcp
     description: The protocol used by rsyslog to talk to the log destination. The allowed values are tcp, and udp. The default is tcp.
     required: true
+  - name: UAADB_PASSWORD
+    secret: true
+    immutable: true
+    generator:
+      type: Password
+    description: The password for access to the UAA database.
   - name: UAA_ADMIN_CLIENT_SECRET
     secret: true
     immutable: true
