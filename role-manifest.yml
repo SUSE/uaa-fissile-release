@@ -330,6 +330,17 @@ configuration:
     generator:
       type: Password
     description: The password for access to the UAA database.
+  - name: SCF_LOG_HOST
+    internal: true
+    description: The log destination to talk to. This has to point to a syslog server.
+  - name: SCF_LOG_PORT
+    internal: true
+    description: The port used by rsyslog to talk to the log destination. If not set it defaults to 514, the standard port of syslog.
+  - name: SCF_LOG_PROTOCOL
+    internal: true
+    default: tcp
+    description: The protocol used by rsyslog to talk to the log destination. The allowed values are tcp, and udp. The default is tcp.
+    required: true
   - name: UAA_ADMIN_CLIENT_SECRET
     secret: true
     immutable: true
