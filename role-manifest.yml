@@ -116,7 +116,6 @@ roles:
     templates:
       properties.cf_mysql.external_host: "((DOMAIN))"
       properties.cf_mysql.mysql.admin_password: "((MYSQL_ADMIN_PASSWORD))"
-      properties.cf_mysql.mysql.advertise_host: mysql-((KUBE_COMPONENT_INDEX)).mysql-pod
       properties.cf_mysql.mysql.cluster_health.password: '((MYSQL_CLUSTER_HEALTH_PASSWORD))'
       properties.cf_mysql.mysql.galera_healthcheck.db_password: "((MYSQL_ADMIN_PASSWORD))"
       properties.cf_mysql.mysql.galera_healthcheck.endpoint_password: "((MYSQL_GALERA_HEALTHCHECK_ENDPOINT_PASSWORD))"
@@ -362,6 +361,8 @@ configuration:
       value_type: private_key
     description: The server's ssl private key. Only passphrase-less keys are supported.
   templates:
+    index: ((KUBE_COMPONENT_INDEX))((^KUBE_COMPONENT_INDEX))0((/KUBE_COMPONENT_INDEX))
+    properties.cf_mysql.mysql.advertise_host: mysql-((KUBE_COMPONENT_INDEX)).mysql-set.((KUBE_SERVICE_DOMAIN_SUFFIX))
     properties.fissile.monit.password: '"((MONIT_PASSWORD))"'
     properties.login.saml.serviceProviderCertificate: '"((SAML_SERVICEPROVIDER_CERT))"'
     properties.login.saml.serviceProviderKey: '"((SAML_SERVICEPROVIDER_KEY))"'
