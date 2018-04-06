@@ -1,6 +1,8 @@
 ---
 roles:
 - name: mysql-proxy
+  environment_scripts:
+  - scripts/configure-HA-hosts.sh
   scripts:
   - scripts/forward_logfiles.sh
   jobs:
@@ -47,6 +49,8 @@ roles:
       properties.cf_mysql.mysql.galera_healthcheck.endpoint_password: ((MYSQL_GALERA_HEALTHCHECK_ENDPOINT_PASSWORD))
       properties.cf_mysql.proxy.api_password: ((MYSQL_PROXY_ADMIN_PASSWORD))
 - name: mysql
+  environment_scripts:
+  - scripts/configure-HA-hosts.sh
   scripts:
   - scripts/create_mysql_data_tmp.sh
   - scripts/chown_vcap_store.sh
