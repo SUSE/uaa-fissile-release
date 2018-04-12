@@ -8,7 +8,7 @@ echo Patching uaa monit for longer timeout, allowing for very slow database migr
 # done by configgin, comes after us.  Thus, we patch the input file to
 # configgin instead.
 
-sed -e 's/with timeout 60 seconds/with timeout 300 seconds/'  \
+sed -e 's/with timeout 60 seconds/with timeout 600 seconds/'  \
     -i /var/vcap/jobs-src/uaa/monit
 
 echo OK

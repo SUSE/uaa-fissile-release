@@ -1,6 +1,8 @@
 ---
 roles:
 - name: mysql-proxy
+  environment_scripts:
+  - scripts/configure-HA-hosts.sh
   scripts:
   - scripts/forward_logfiles.sh
   jobs:
@@ -17,6 +19,7 @@ roles:
   - name: switchboard
   run:
     scaling:
+      ha: 2
       min: 1
       max: 3
     capabilities: []
@@ -46,6 +49,8 @@ roles:
       properties.cf_mysql.mysql.galera_healthcheck.endpoint_password: ((MYSQL_GALERA_HEALTHCHECK_ENDPOINT_PASSWORD))
       properties.cf_mysql.proxy.api_password: ((MYSQL_PROXY_ADMIN_PASSWORD))
 - name: mysql
+  environment_scripts:
+  - scripts/configure-HA-hosts.sh
   scripts:
   - scripts/create_mysql_data_tmp.sh
   - scripts/chown_vcap_store.sh
@@ -67,8 +72,9 @@ roles:
   - name: gra-log-purger-executable
   run:
     scaling:
+      ha: 2
       min: 1
-      max: 1
+      max: 3
     capabilities: []
     persistent-volumes:
       - path: /var/vcap/store
@@ -116,7 +122,6 @@ roles:
     templates:
       properties.cf_mysql.external_host: "((DOMAIN))"
       properties.cf_mysql.mysql.admin_password: "((MYSQL_ADMIN_PASSWORD))"
-      properties.cf_mysql.mysql.advertise_host: mysql-((KUBE_COMPONENT_INDEX)).mysql-pod
       properties.cf_mysql.mysql.cluster_health.password: '((MYSQL_CLUSTER_HEALTH_PASSWORD))'
       properties.cf_mysql.mysql.galera_healthcheck.db_password: "((MYSQL_ADMIN_PASSWORD))"
       properties.cf_mysql.mysql.galera_healthcheck.endpoint_password: "((MYSQL_GALERA_HEALTHCHECK_ENDPOINT_PASSWORD))"
@@ -257,6 +262,8 @@ configuration:
     type: environment
   - name: KUBE_COMPONENT_INDEX
     type: environment
+  - name: KUBE_COMPONENT_NAME
+    type: environment
   - name: KUBE_SECRETS_GENERATION_COUNTER
     type: environment
   - name: KUBE_SECRETS_GENERATION_NAME
@@ -362,6 +369,11 @@ configuration:
       value_type: private_key
     description: The server's ssl private key. Only passphrase-less keys are supported.
   templates:
+    index: ((KUBE_COMPONENT_INDEX))((^KUBE_COMPONENT_INDEX))0((/KUBE_COMPONENT_INDEX))
+    ip: '"((IP_ADDRESS))"'
+    networks.default.dns_record_name: '"((#KUBE_COMPONENT_NAME))((KUBE_COMPONENT_NAME))((/KUBE_COMPONENT_NAME))((^KUBE_COMPONENT_NAME))((DNS_RECORD_NAME))((/KUBE_COMPONENT_NAME))"'
+    networks.default.ip: '"((IP_ADDRESS))"'
+    properties.cf_mysql.mysql.advertise_host: mysql-((KUBE_COMPONENT_INDEX)).mysql-set.((KUBE_SERVICE_DOMAIN_SUFFIX))
     properties.fissile.monit.password: '"((MONIT_PASSWORD))"'
     properties.login.saml.serviceProviderCertificate: '"((SAML_SERVICEPROVIDER_CERT))"'
     properties.login.saml.serviceProviderKey: '"((SAML_SERVICEPROVIDER_KEY))"'
