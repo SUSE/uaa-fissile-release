@@ -35,7 +35,7 @@ source "${DEFAULTS_ENV}"
 helm upgrade ${RELEASE} helm \
      --namespace "${NAMESPACE}" \
      --set "env.DOMAIN=${DOMAIN}" \
-     --set "env.UAA_ADMIN_CLIENT_SECRET=${UAA_ADMIN_CLIENT_SECRET}" \
+     --set "secrets.UAA_ADMIN_CLIENT_SECRET=${UAA_ADMIN_CLIENT_SECRET}" \
      --set "kube.external_ips[0]=$(dig +short ${DOMAIN})" \
      --set "kube.auth=rbac"
 

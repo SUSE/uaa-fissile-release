@@ -66,6 +66,7 @@ roles:
     release_name: cf-mysql
     provides:
       mysql: {}
+  tags: [indexed]
   processes:
   - name: mariadb_ctrl
   - name: galera-healthcheck
