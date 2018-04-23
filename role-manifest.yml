@@ -282,34 +282,29 @@ configuration:
       parameter `LOG_LEVEL` above instead, from which this one is derived.
   - name: MONIT_PASSWORD
     secret: true
-    immutable: true
     generator:
       type: Password
     description: Password used for the monit API.
   - name: MYSQL_ADMIN_PASSWORD
     secret: true
-    immutable: true
     generator:
       type: Password
     description: The password for the MySQL server admin user.
     required: true
   - name: MYSQL_CLUSTER_HEALTH_PASSWORD
     secret: true
-    immutable: true
     generator:
       type: Password
     description: The password for the cluster logger health user.
     required: true
   - name: MYSQL_GALERA_HEALTHCHECK_ENDPOINT_PASSWORD
     secret: true
-    immutable: true
     generator:
       type: Password
     description: The password used to contact the sidecar endpoints via Basic Auth.
     required: true
   - name: MYSQL_PROXY_ADMIN_PASSWORD
     secret: true
-    immutable: true
     generator:
       type: Password
     description: The password for Basic Auth used to secure the MySQL proxy API.
@@ -341,13 +336,11 @@ configuration:
     required: true
   - name: UAADB_PASSWORD
     secret: true
-    immutable: true
     generator:
       type: Password
     description: The password for access to the UAA database.
   - name: UAA_ADMIN_CLIENT_SECRET
     secret: true
-    immutable: true
     description: The password of the admin client - a client named admin with uaa.admin as an authority.
     required: true
   - name: UAA_SERVER_CERT
