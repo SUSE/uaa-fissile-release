@@ -67,8 +67,8 @@ roles:
     provides:
       mysql: {}
   tags:
-  - indexed
-  # This role is indexed to have access to volume claim templates for its persistent volume.
+  - clustered
+  # This role needs volume claim templates, but no LB => clustered.
   processes:
   - name: mariadb_ctrl
   - name: galera-healthcheck
