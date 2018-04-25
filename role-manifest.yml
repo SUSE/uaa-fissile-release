@@ -68,7 +68,7 @@ roles:
       mysql: {}
   tags:
   - clustered
-  # This role needs volume claim templates, but no LB => clustered.
+  # This role needs volume claim templates (see storage), but no LB (has mysql-proxy) => clustered.
   processes:
   - name: mariadb_ctrl
   - name: galera-healthcheck
