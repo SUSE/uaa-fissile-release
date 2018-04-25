@@ -66,6 +66,9 @@ roles:
     release_name: cf-mysql
     provides:
       mysql: {}
+  tags:
+  - clustered
+  # This role needs volume claim templates (see storage), but no LB (has mysql-proxy) => clustered.
   processes:
   - name: mariadb_ctrl
   - name: galera-healthcheck
