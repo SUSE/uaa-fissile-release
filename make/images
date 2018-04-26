@@ -7,4 +7,9 @@ GIT_ROOT=${GIT_ROOT:-$(git rev-parse --show-toplevel)}
 cd "$GIT_ROOT"
 . "${GIT_ROOT}/.envrc"
 
-fissile build images
+if [ -z "${DOCKER_APP_VERSION:-}" ]; then
+  echo "DOCKER_APP_VERSION is not set"
+  exit 1
+fi
+
+fissile build images --add-label "version.cap=$DOCKER_APP_VERSION"
