@@ -4,3 +4,6 @@
 [submodule "src/cf-mysql-release"]
 	path = src/cf-mysql-release
 	url = https://github.com/cloudfoundry/cf-mysql-release.git
+[submodule "src/uaa-helper-release"]
+	path = src/uaa-helper-release
+	url = https://github.com/SUSE/scf-helper-release
