@@ -1,5 +1,5 @@
 /work-dir/
-/env/certs.env
+/container-host-files/etc/scf/config/env/certs.env
 /kube-test/bosh/
 /kube-test/bosh-task/
 .dev_builds/

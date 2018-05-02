@@ -12,7 +12,7 @@ if [ -z "${APP_VERSION:-}" ]; then
 fi
 
 DOMAIN=${DOMAIN:-}
-DEFAULTS_ENV=env/defaults.env
+DEFAULTS_ENV=container-host-files/etc/scf/config/env/defaults.env
 if test -n "${DOMAIN}"; then
     TMP="$(mktemp -d)"
     cp "${DEFAULTS_ENV}" "${TMP}"

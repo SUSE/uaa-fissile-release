@@ -33,7 +33,7 @@ kubectl get storageclass persistent 2>/dev/null || {
 }
 
 DOMAIN=${DOMAIN:-}
-DEFAULTS_ENV=env/defaults.env
+DEFAULTS_ENV=container-host-files/etc/scf/config/env/defaults.env
 
 if test -n "${DOMAIN}"; then
     TMP="$(mktemp -d)"
