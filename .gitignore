@@ -5,6 +5,7 @@
 .dev_builds/
 /src/*-release/config/dev.yml
 /src/*-release/dev_releases/
+/src/*-release/blobs/
 /kube
 /helm
 /*.zip
@@ -12,4 +13,3 @@ uaa_metrics.csv
 /bosh/
 /helm/
 /secrets/
-/src/uaa-helper-release/blobs/

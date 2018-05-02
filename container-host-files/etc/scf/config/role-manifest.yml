@@ -7,9 +7,9 @@ roles:
   - scripts/forward_logfiles.sh
   jobs:
   - name: global-properties # needs to be first so images use it for processing monit templates
-    release_name: uaa-helper
+    release_name: scf-helper
   - name: patch-properties
-    release_name: uaa-helper
+    release_name: scf-helper
   - name: proxy
     release_name: cf-mysql
     provides:
@@ -59,9 +59,9 @@ roles:
   - scripts/forward_logfiles.sh
   jobs:
   - name: global-properties # needs to be first so images use it for processing monit templates
-    release_name: uaa-helper
+    release_name: scf-helper
   - name: patch-properties
-    release_name: uaa-helper
+    release_name: scf-helper
   - name: mysql
     release_name: cf-mysql
     provides:
@@ -139,7 +139,7 @@ roles:
   - scripts/forward_logfiles.sh
   jobs:
   - name: global-properties # needs to be first so images use it for processing monit templates
-    release_name: uaa-helper
+    release_name: scf-helper
   - name: uaa
     release_name: uaa
   processes:
@@ -181,7 +181,7 @@ roles:
   type: bosh-task
   jobs:
   - name: generate-secrets
-    release_name: uaa-helper
+    release_name: scf-helper
   processes: []
   run:
     scaling:
