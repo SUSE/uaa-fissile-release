@@ -6,10 +6,10 @@ roles:
   scripts:
   - scripts/forward_logfiles.sh
   jobs:
-  - name: global-properties # needs to be first so images use it for processing monit templates
-    release_name: uaa-helper
+  - name: global-uaa-properties # needs to be first so images use it for processing monit templates
+    release_name: scf-helper
   - name: patch-properties
-    release_name: uaa-helper
+    release_name: scf-helper
   - name: proxy
     release_name: cf-mysql
     provides:
@@ -58,10 +58,10 @@ roles:
   - scripts/patches/enable_mysql_galera_bootstrap.sh
   - scripts/forward_logfiles.sh
   jobs:
-  - name: global-properties # needs to be first so images use it for processing monit templates
-    release_name: uaa-helper
+  - name: global-uaa-properties # needs to be first so images use it for processing monit templates
+    release_name: scf-helper
   - name: patch-properties
-    release_name: uaa-helper
+    release_name: scf-helper
   - name: mysql
     release_name: cf-mysql
     provides:
@@ -138,8 +138,8 @@ roles:
   - scripts/patches/fix_uaa_monit_timeout.sh
   - scripts/forward_logfiles.sh
   jobs:
-  - name: global-properties # needs to be first so images use it for processing monit templates
-    release_name: uaa-helper
+  - name: global-uaa-properties # needs to be first so images use it for processing monit templates
+    release_name: scf-helper
   - name: uaa
     release_name: uaa
   processes:
@@ -180,8 +180,8 @@ roles:
 - name: secret-generation
   type: bosh-task
   jobs:
-  - name: generate-secrets
-    release_name: uaa-helper
+  - name: generate-uaa-secrets
+    release_name: scf-helper
   processes: []
   run:
     scaling:

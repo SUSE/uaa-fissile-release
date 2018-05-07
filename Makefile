@@ -1,6 +1,6 @@
 #!/usr/bin/env make
 
-.PHONY: prep build releases compile images kube kube-dist helm publish run stop dist generate mysql-release uaa-release uaa-helper-release
+.PHONY: prep build releases compile images kube kube-dist helm publish run stop dist generate mysql-release uaa-release scf-helper-release
 
 ########## VAGRANT VM TARGETS ##########
 
@@ -27,13 +27,13 @@ mysql-release:
 uaa-release:
 	make/bosh-release src/uaa-release
 
-uaa-helper-release:
-	make/bosh-release src/uaa-helper-release
+scf-helper-release:
+	make/bosh-release src/scf-helper-release
 
 releases: \
 	mysql-release \
 	uaa-release \
-	uaa-helper-release \
+	scf-helper-release \
 	${NULL}
 
 ########## FISSILE BUILD TARGETS ##########

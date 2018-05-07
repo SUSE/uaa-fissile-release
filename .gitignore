@@ -1,10 +1,11 @@
 /work-dir/
-/env/certs.env
+/container-host-files/etc/scf/config/env/certs.env
 /kube-test/bosh/
 /kube-test/bosh-task/
 .dev_builds/
 /src/*-release/config/dev.yml
 /src/*-release/dev_releases/
+/src/*-release/blobs/
 /kube
 /helm
 /*.zip
@@ -12,4 +13,3 @@ uaa_metrics.csv
 /bosh/
 /helm/
 /secrets/
-/src/uaa-helper-release/blobs/

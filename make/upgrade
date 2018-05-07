@@ -20,7 +20,7 @@ stampy "${GIT_ROOT}/uaa_metrics.csv" "$0" make-run start
 stampy "${GIT_ROOT}/uaa_metrics.csv" "$0" make-run::upgrade start
 
 DOMAIN=${DOMAIN:-}
-DEFAULTS_ENV=env/defaults.env
+DEFAULTS_ENV=container-host-files/etc/scf/config/env/defaults.env
 
 if test -n "${DOMAIN}"; then
     TMP="$(mktemp -d)"
