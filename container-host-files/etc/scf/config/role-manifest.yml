@@ -180,7 +180,7 @@ roles:
 - name: secret-generation
   type: bosh-task
   jobs:
-  - name: generate-uaa-secrets
+  - name: generate-secrets
     release_name: scf-helper
   processes: []
   run:
@@ -197,7 +197,12 @@ roles:
     service-account: secret-generator
   configuration:
     templates:
-      properties.uaa.secrets.variables: '((DOMAIN))((KUBE_SECRETS_GENERATION_COUNTER))((KUBE_SECRETS_GENERATION_NAME))'
+      properties.scf.secrets.cert_expiration: ((CERT_EXPIRATION))
+      properties.scf.secrets.domain: ((DOMAIN))
+      properties.scf.secrets.generation: ((KUBE_SECRETS_GENERATION_COUNTER))
+      properties.scf.secrets.name: ((KUBE_SECRETS_GENERATION_NAME))
+      properties.scf.secrets.namespace: ((KUBERNETES_NAMESPACE))
+      properties.scf.secrets.service_domain_suffix: ((KUBE_SERVICE_DOMAIN_SUFFIX))
 configuration:
   auth:
     roles:
@@ -221,6 +226,9 @@ configuration:
       secret-generator:
         roles: [configgin-role, secrets-role]
   variables:
+  - name: CERT_EXPIRATION
+    description: Expiration for generated certificates (in days)
+    default: 10950
   - name: DOMAIN
     description: >
       Base domain name of the UAA endpoint; `uaa.${DOMAIN}` must be correctly
