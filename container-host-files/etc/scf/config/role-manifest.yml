@@ -178,6 +178,8 @@ roles:
       properties.uaa.logging_level: ((LOG_LEVEL_LOG4J))((#LOG_LEVEL))((/LOG_LEVEL))
       properties.uaadb.roles: '[{"name": "uaaadmin", "password": "((UAADB_PASSWORD))", "tag": "admin"}]'
 - name: secret-generation
+  environment_scripts:
+  - scripts/configure-HA-hosts.sh
   type: bosh-task
   jobs:
   - name: generate-secrets
