@@ -228,6 +228,7 @@ configuration:
   variables:
   - name: AEK_PASSWORD
     secret: true
+    immutable: true
     generator:
       type: Password
     description: Password used for the active uaa encryption key.
