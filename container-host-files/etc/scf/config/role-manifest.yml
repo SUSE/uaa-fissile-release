@@ -203,6 +203,7 @@ roles:
       properties.scf.secrets.cert_expiration: ((CERT_EXPIRATION))
       properties.scf.secrets.domain: ((DOMAIN))
       properties.scf.secrets.generation: ((KUBE_SECRETS_GENERATION_COUNTER))
+      properties.scf.secrets.is_install: ((HELM_IS_INSTALL))
       properties.scf.secrets.name: ((KUBE_SECRETS_GENERATION_NAME))
       properties.scf.secrets.namespace: ((KUBERNETES_NAMESPACE))
       properties.scf.secrets.service_domain_suffix: ((KUBE_SERVICE_DOMAIN_SUFFIX))
@@ -244,6 +245,8 @@ configuration:
       configured to point to this UAA instance
     required: true
   # INTERNAL_CA_CERT (id: cacert) is the CA used to sign all internal certs
+  - name: HELM_IS_INSTALL
+    type: environment
   - name: INTERNAL_CA_CERT
     secret: true
     generator:
