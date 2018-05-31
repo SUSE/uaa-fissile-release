@@ -146,6 +146,7 @@ roles:
   - uaa
   run:
     scaling:
+      ha: 2
       min: 1
       max: 65535
     capabilities: []
