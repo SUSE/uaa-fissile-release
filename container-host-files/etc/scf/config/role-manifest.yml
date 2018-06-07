@@ -4,6 +4,7 @@ roles:
   environment_scripts:
   - scripts/configure-HA-hosts.sh
   scripts:
+  - scripts/patches/fix_monit_rsyslog.sh
   - scripts/forward_logfiles.sh
   jobs:
   - name: global-uaa-properties # needs to be first so images use it for processing monit templates
@@ -17,11 +18,13 @@ roles:
   processes:
   - name: cf-mysql-route-registrar
   - name: switchboard
+  tags:
+  - active-passive
   run:
     scaling:
-      ha: 2
+      ha: 1
       min: 1
-      max: 3
+      max: 1
     capabilities: []
     persistent-volumes: []
     shared-volumes: []
@@ -39,7 +42,9 @@ roles:
       internal: 1936
     healthcheck:
       readiness:
-        url: http://container-ip:1936/
+        command:
+        - curl --silent --fail http://${HOSTNAME}:1936/
+    active-passive-probe: /bin/true # Switchboard currently has no internal locking
   configuration:
     templates:
       properties.cf_mysql.external_host: ((DOMAIN))
@@ -56,6 +61,7 @@ roles:
   - scripts/chown_vcap_store.sh
   - scripts/patches/fix_mysql_advertise_ip.sh
   - scripts/patches/enable_mysql_galera_bootstrap.sh
+  - scripts/patches/fix_monit_rsyslog.sh
   - scripts/forward_logfiles.sh
   jobs:
   - name: global-uaa-properties # needs to be first so images use it for processing monit templates
@@ -67,8 +73,8 @@ roles:
     provides:
       mysql: {}
   tags:
-  - clustered
-  # This role needs volume claim templates (see storage), but no LB (has mysql-proxy) => clustered.
+  - headless
+  - sequential-startup
   processes:
   - name: mariadb_ctrl
   - name: galera-healthcheck
@@ -120,7 +126,8 @@ roles:
     healthcheck:
       slow_startup: true
       readiness:
-        url: http://container-ip:9200/
+        command:
+        - curl --silent --fail http://${HOSTNAME}:9200/
   configuration:
     templates:
       properties.cf_mysql.external_host: "((DOMAIN))"
@@ -136,6 +143,7 @@ roles:
   scripts:
   - scripts/authorize_internal_ca.sh
   - scripts/patches/fix_uaa_monit_timeout.sh
+  - scripts/patches/fix_monit_rsyslog.sh
   - scripts/forward_logfiles.sh
   jobs:
   - name: global-uaa-properties # needs to be first so images use it for processing monit templates
@@ -144,6 +152,8 @@ roles:
     release_name: uaa
   processes:
   - uaa
+  tags:
+  - sequential-startup
   run:
     scaling:
       ha: 2
@@ -166,14 +176,9 @@ roles:
         internal: 8443
         public: true
     healthcheck:
-      liveness:
-        initial_delay: 1800
-        period: 60
       readiness:
-        url: https://container-ip:8443/info
-        headers:
-          host: uaa
-          accept: application/json
+        command:
+        - "curl --resolve uaa:8443:$(getent hosts ${HOSTNAME} | awk '{ print $1 }') --fail -H 'Host: uaa' -H 'Accept: application/json' https://uaa:8443/info"
   configuration:
     templates:
       properties.uaa.logging_level: ((LOG_LEVEL_LOG4J))((#LOG_LEVEL))((/LOG_LEVEL))
@@ -185,7 +190,8 @@ roles:
   jobs:
   - name: generate-secrets
     release_name: scf-helper
-  processes: []
+  environment_scripts:
+  - scripts/configure-HA-hosts.sh
   run:
     scaling:
       min: 1
