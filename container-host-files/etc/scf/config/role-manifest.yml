@@ -148,6 +148,8 @@ roles:
   jobs:
   - name: global-uaa-properties # needs to be first so images use it for processing monit templates
     release_name: scf-helper
+  - name: wait-for-database
+    release_name: scf-helper
   - name: uaa
     release_name: uaa
   processes:
@@ -183,6 +185,8 @@ roles:
     templates:
       properties.uaa.logging_level: ((LOG_LEVEL_LOG4J))((#LOG_LEVEL))((/LOG_LEVEL))
       properties.uaadb.roles: '[{"name": "uaaadmin", "password": "((UAADB_PASSWORD))", "tag": "admin"}]'
+      properties.wait-for-database.hostname: mysql-proxy
+      properties.wait-for-database.port: 3306
 - name: secret-generation
   environment_scripts:
   - scripts/configure-HA-hosts.sh
