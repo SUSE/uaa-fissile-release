@@ -47,6 +47,7 @@ fi
 source "${DEFAULTS_ENV}"
 
 helm install helm \
+     --name "${NAMESPACE}" \
      --namespace "${NAMESPACE}" \
      --set "env.DOMAIN=${DOMAIN}" \
      --set "secrets.UAA_ADMIN_CLIENT_SECRET=${UAA_ADMIN_CLIENT_SECRET}" \
