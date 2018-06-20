@@ -13,7 +13,7 @@ GIT_ROOT=${GIT_ROOT:-$(git rev-parse --show-toplevel)}
 cd "${GIT_ROOT}"
 
 # Argument? (**)
-RELEASE=$(helm list --date --reverse --max 1 --namespace "${NAMESPACE}" -q | tail -n 1)
+RELEASE=${NAMESPACE}
 echo Upgrading ${NAMESPACE} release \"${RELEASE}\" ...
 
 stampy "${GIT_ROOT}/uaa_metrics.csv" "$0" make-run start
@@ -25,6 +25,7 @@ DEFAULTS_ENV=container-host-files/etc/scf/config/env/defaults.env
 if test -n "${DOMAIN}"; then
     TMP="$(mktemp -d)"
     cp "${DEFAULTS_ENV}" "${TMP}"
+    # shellcheck disable=SC2064
     trap "rm -rf ${TMP}" EXIT
     DEFAULTS_ENV="${TMP}/$(basename "${DEFAULTS_ENV}")"
     sed -i "s/^DOMAIN=.*/DOMAIN=${DOMAIN}/" "${DEFAULTS_ENV}"
@@ -36,7 +37,7 @@ helm upgrade ${RELEASE} helm \
      --namespace "${NAMESPACE}" \
      --set "env.DOMAIN=${DOMAIN}" \
      --set "secrets.UAA_ADMIN_CLIENT_SECRET=${UAA_ADMIN_CLIENT_SECRET}" \
-     --set "kube.external_ips[0]=$(dig +short ${DOMAIN})" \
+     --set "kube.external_ips[0]=$(dig +short "${DOMAIN}")" \
      "$@"
 
 stampy "${GIT_ROOT}/uaa_metrics.csv" "$0" make-run::upgrade end
