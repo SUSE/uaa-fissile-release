@@ -2,6 +2,7 @@
 properties:
   cf_mysql:
     mysql:
+      port: 13306
       startup_timeout: 300
       galera_healthcheck:
         endpoint_username: galera_healthcheck_bootstrap_user
@@ -22,7 +23,7 @@ properties:
         active_key_id: default
     logging_level: INFO
   uaadb:
-    address: mysql-proxy
+    address: database-set
     databases:
     - name: uaadb
       tag: uaa

@@ -1,59 +1,6 @@
 ---
 roles:
-- name: mysql-proxy
-  environment_scripts:
-  - scripts/configure-HA-hosts.sh
-  scripts:
-  - scripts/patches/fix_monit_rsyslog.sh
-  - scripts/forward_logfiles.sh
-  jobs:
-  - name: global-uaa-properties # needs to be first so images use it for processing monit templates
-    release_name: scf-helper
-  - name: patch-properties
-    release_name: scf-helper
-  - name: proxy
-    release_name: cf-mysql
-    provides:
-      proxy: {}
-  processes:
-  - name: cf-mysql-route-registrar
-  - name: switchboard
-  tags:
-  - active-passive
-  run:
-    scaling:
-      ha: 1
-      min: 1
-      max: 1
-    capabilities: []
-    persistent-volumes: []
-    shared-volumes: []
-    memory: 63
-    virtual-cpus: 2
-    exposed-ports:
-    - name: mysql-proxy
-      protocol: TCP
-      internal: 3306
-    - name: api
-      protocol: TCP
-      internal: 80
-    - name: healthcheck
-      protocol: TCP
-      internal: 1936
-    healthcheck:
-      readiness:
-        command:
-        - curl --silent --fail http://${HOSTNAME}:1936/
-    active-passive-probe: /bin/true # Switchboard currently has no internal locking
-  configuration:
-    templates:
-      properties.cf_mysql.external_host: ((DOMAIN))
-      properties.cf_mysql.mysql.admin_password: ((MYSQL_ADMIN_PASSWORD))
-      properties.cf_mysql.mysql.cluster_health.password: ((MYSQL_CLUSTER_HEALTH_PASSWORD))
-      properties.cf_mysql.mysql.galera_healthcheck.db_password: ((MYSQL_ADMIN_PASSWORD))
-      properties.cf_mysql.mysql.galera_healthcheck.endpoint_password: ((MYSQL_GALERA_HEALTHCHECK_ENDPOINT_PASSWORD))
-      properties.cf_mysql.proxy.api_password: ((MYSQL_PROXY_ADMIN_PASSWORD))
-- name: mysql
+- name: database
   environment_scripts:
   - scripts/configure-HA-hosts.sh
   scripts:
@@ -72,6 +19,10 @@ roles:
     release_name: cf-mysql
     provides:
       mysql: {}
+  - name: proxy
+    release_name: cf-mysql
+    provides:
+      proxy: {}
   tags:
   - headless
   - sequential-startup
@@ -90,44 +41,48 @@ roles:
         tag: mysql-data
         size: 20
     shared-volumes: []
-    memory: 1779
+    memory: 1900
     virtual-cpus: 2
     exposed-ports:
-      - name: 'mysql'
-        protocol: 'TCP'
-        external: 3306
-        internal: 3306
-        public: false
-      - name: 'galera-tcp'
-        protocol: 'TCP'
-        external: 4567
-        internal: 4567
-        public: false
-      - name: 'galera-udp'
-        protocol: 'UDP'
-        external: 4567
-        internal: 4567
-        public: false
-      - name: 'galera-ist'
-        protocol: 'TCP'
-        external: 4568
-        internal: 4568
-        public: false
-      - name: 'healthcheck'
-        protocol: 'TCP'
-        external: 9200
-        internal: 9200
-        public: false
-      - name: 'xtrabackup'
-        protocol: 'TCP'
-        external: 4444
-        internal: 4444
-        public: false
+    - name: 'mysql'
+      protocol: 'TCP'
+      internal: 13306
+      public: false
+    - name: 'galera-tcp'
+      protocol: 'TCP'
+      internal: 4567
+      public: false
+    - name: 'galera-udp'
+      protocol: 'UDP'
+      internal: 4567
+      public: false
+    - name: 'galera-ist'
+      protocol: 'TCP'
+      internal: 4568
+      public: false
+    - name: 'healthcheck'
+      protocol: 'TCP'
+      internal: 9200
+      public: false
+    - name: 'xtrabackup'
+      protocol: 'TCP'
+      internal: 4444
+      public: false
+    - name: mysql-proxy
+      protocol: TCP
+      internal: 3306
+    - name: api
+      protocol: TCP
+      internal: 80
+    - name: healthck-proxy
+      protocol: TCP
+      internal: 1936
     healthcheck:
       slow_startup: true
       readiness:
         command:
         - curl --silent --fail http://${HOSTNAME}:9200/
+        - curl --silent --fail http://${HOSTNAME}:1936/
   configuration:
     templates:
       properties.cf_mysql.external_host: "((DOMAIN))"
@@ -136,6 +91,7 @@ roles:
       properties.cf_mysql.mysql.galera_healthcheck.db_password: "((MYSQL_ADMIN_PASSWORD))"
       properties.cf_mysql.mysql.galera_healthcheck.endpoint_password: "((MYSQL_GALERA_HEALTHCHECK_ENDPOINT_PASSWORD))"
       properties.cf_mysql.mysql.seeded_databases: '[{"name":"uaadb", "username": "uaaadmin", "password":"((UAADB_PASSWORD))"}]'
+      properties.cf_mysql.proxy.api_password: ((MYSQL_PROXY_ADMIN_PASSWORD))
 - name: uaa
   environment_scripts:
   - scripts/configure-HA-hosts.sh
@@ -185,7 +141,7 @@ roles:
     templates:
       properties.uaa.logging_level: ((LOG_LEVEL_LOG4J))((#LOG_LEVEL))((/LOG_LEVEL))
       properties.uaadb.roles: '[{"name": "uaaadmin", "password": "((UAADB_PASSWORD))", "tag": "admin"}]'
-      properties.wait-for-database.hostname: mysql-proxy
+      properties.wait-for-database.hostname: database-set
       properties.wait-for-database.port: 3306
 - name: secret-generation
   environment_scripts:
@@ -400,7 +356,7 @@ configuration:
     ip: '"((IP_ADDRESS))"'
     networks.default.dns_record_name: '"((#KUBE_COMPONENT_NAME))((KUBE_COMPONENT_NAME))((/KUBE_COMPONENT_NAME))((^KUBE_COMPONENT_NAME))((DNS_RECORD_NAME))((/KUBE_COMPONENT_NAME))"'
     networks.default.ip: '"((IP_ADDRESS))"'
-    properties.cf_mysql.mysql.advertise_host: mysql-((KUBE_COMPONENT_INDEX)).mysql-set.((KUBERNETES_NAMESPACE)).svc.((KUBERNETES_CLUSTER_DOMAIN))
+    properties.cf_mysql.mysql.advertise_host: database-((KUBE_COMPONENT_INDEX)).database-set.((KUBERNETES_NAMESPACE)).svc.((KUBERNETES_CLUSTER_DOMAIN))
     properties.encryption.encryption_keys: '[{"label":"smorgasbrod","passphrase":"((AEK_PASSWORD))"}]'
     properties.fissile.monit.password: '"((MONIT_PASSWORD))"'
     properties.login.saml.serviceProviderCertificate: '"((SAML_SERVICEPROVIDER_CERT))"'
