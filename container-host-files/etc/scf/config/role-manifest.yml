@@ -19,12 +19,50 @@ instance_groups:
     release: cf-mysql
     provides:
       mysql: {}
+    properties:
+      bosh_containerization:
+        ports:
+        - name: 'mysql'
+          protocol: 'TCP'
+          internal: 13306
+          public: false
+        - name: 'galera-tcp'
+          protocol: 'TCP'
+          internal: 4567
+          public: false
+        - name: 'galera-udp'
+          protocol: 'UDP'
+          internal: 4567
+          public: false
+        - name: 'galera-ist'
+          protocol: 'TCP'
+          internal: 4568
+          public: false
+        - name: 'healthcheck'
+          protocol: 'TCP'
+          internal: 9200
+          public: false
+        - name: 'xtrabackup'
+          protocol: 'TCP'
+          internal: 4444
+          public: false
   - name: proxy
     release: cf-mysql
     provides:
       proxy: {}
+    properties:
+      bosh_containerization:
+        ports:
+        - name: mysql-proxy
+          protocol: TCP
+          internal: 3306
+        - name: api
+          protocol: TCP
+          internal: 80
+        - name: healthck-proxy
+          protocol: TCP
+          internal: 1936
   tags:
-  - headless
   - sequential-startup
   processes:
   - name: mariadb_ctrl
@@ -43,40 +81,6 @@ instance_groups:
     shared-volumes: []
     memory: 1900
     virtual-cpus: 2
-    exposed-ports:
-    - name: 'mysql'
-      protocol: 'TCP'
-      internal: 13306
-      public: false
-    - name: 'galera-tcp'
-      protocol: 'TCP'
-      internal: 4567
-      public: false
-    - name: 'galera-udp'
-      protocol: 'UDP'
-      internal: 4567
-      public: false
-    - name: 'galera-ist'
-      protocol: 'TCP'
-      internal: 4568
-      public: false
-    - name: 'healthcheck'
-      protocol: 'TCP'
-      internal: 9200
-      public: false
-    - name: 'xtrabackup'
-      protocol: 'TCP'
-      internal: 4444
-      public: false
-    - name: mysql-proxy
-      protocol: TCP
-      internal: 3306
-    - name: api
-      protocol: TCP
-      internal: 80
-    - name: healthck-proxy
-      protocol: TCP
-      internal: 1936
     healthcheck:
       slow_startup: true
       readiness:
@@ -108,6 +112,19 @@ instance_groups:
     release: scf-helper
   - name: uaa
     release: uaa
+    properties:
+      bosh_containerization:
+        ports:
+        - name: uaa
+          protocol: TCP
+          external: 8080
+          internal: 8080
+          public: false
+        - name: uaa-ssl
+          protocol: TCP
+          external: 2793
+          internal: 8443
+          public: true
   processes:
   - uaa
   tags:
@@ -122,17 +139,6 @@ instance_groups:
     shared-volumes: []
     memory: 2205
     virtual-cpus: 2
-    exposed-ports:
-      - name: uaa
-        protocol: TCP
-        external: 8080
-        internal: 8080
-        public: false
-      - name: uaa-ssl
-        protocol: TCP
-        external: 2793
-        internal: 8443
-        public: true
     healthcheck:
       readiness:
         command:
@@ -162,7 +168,6 @@ instance_groups:
     shared-volumes: []
     memory: 256
     virtual-cpus: 1
-    exposed-ports: []
     service-account: secret-generator
   configuration:
     templates:
