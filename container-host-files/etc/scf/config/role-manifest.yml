@@ -1,5 +1,5 @@
 ---
-roles:
+instance_groups:
 - name: database
   environment_scripts:
   - scripts/configure-HA-hosts.sh
@@ -12,15 +12,15 @@ roles:
   - scripts/forward_logfiles.sh
   jobs:
   - name: global-uaa-properties # needs to be first so images use it for processing monit templates
-    release_name: scf-helper
+    release: scf-helper
   - name: patch-properties
-    release_name: scf-helper
+    release: scf-helper
   - name: mysql
-    release_name: cf-mysql
+    release: cf-mysql
     provides:
       mysql: {}
   - name: proxy
-    release_name: cf-mysql
+    release: cf-mysql
     provides:
       proxy: {}
   tags:
@@ -103,11 +103,11 @@ roles:
   - scripts/forward_logfiles.sh
   jobs:
   - name: global-uaa-properties # needs to be first so images use it for processing monit templates
-    release_name: scf-helper
+    release: scf-helper
   - name: wait-for-database
-    release_name: scf-helper
+    release: scf-helper
   - name: uaa
-    release_name: uaa
+    release: uaa
   processes:
   - uaa
   tags:
@@ -149,7 +149,7 @@ roles:
   type: bosh-task
   jobs:
   - name: generate-secrets
-    release_name: scf-helper
+    release: scf-helper
   environment_scripts:
   - scripts/configure-HA-hosts.sh
   run:
