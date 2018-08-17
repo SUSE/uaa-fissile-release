@@ -147,7 +147,7 @@ instance_groups:
     templates:
       properties.uaa.logging_level: ((LOG_LEVEL_LOG4J))((#LOG_LEVEL))((/LOG_LEVEL))
       properties.uaadb.roles: '[{"name": "uaaadmin", "password": "((UAADB_PASSWORD))", "tag": "admin"}]'
-      properties.wait-for-database.hostname: database-set
+      properties.wait-for-database.hostname: database-proxy-set
       properties.wait-for-database.port: 3306
 - name: secret-generation
   environment_scripts:
@@ -361,7 +361,7 @@ configuration:
     ip: '"((IP_ADDRESS))"'
     networks.default.dns_record_name: '"((#KUBE_COMPONENT_NAME))((KUBE_COMPONENT_NAME))((/KUBE_COMPONENT_NAME))((^KUBE_COMPONENT_NAME))((DNS_RECORD_NAME))((/KUBE_COMPONENT_NAME))"'
     networks.default.ip: '"((IP_ADDRESS))"'
-    properties.cf_mysql.mysql.advertise_host: database-((KUBE_COMPONENT_INDEX)).database-set.((KUBERNETES_NAMESPACE)).svc.((KUBERNETES_CLUSTER_DOMAIN))
+    properties.cf_mysql.mysql.advertise_host: database-((KUBE_COMPONENT_INDEX)).database-mysql-set.((KUBERNETES_NAMESPACE)).svc.((KUBERNETES_CLUSTER_DOMAIN))
     properties.encryption.encryption_keys: '[{"label":"smorgasbrod","passphrase":"((AEK_PASSWORD))"}]'
     properties.fissile.monit.password: '"((MONIT_PASSWORD))"'
     properties.login.saml.serviceProviderCertificate: '"((SAML_SERVICEPROVIDER_CERT))"'

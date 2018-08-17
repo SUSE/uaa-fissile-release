@@ -23,7 +23,7 @@ properties:
         active_key_id: default
     logging_level: INFO
   uaadb:
-    address: database-set
+    address: database-proxy-set
     databases:
     - name: uaadb
       tag: uaa
