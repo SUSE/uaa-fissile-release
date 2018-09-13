@@ -203,7 +203,7 @@ configuration:
   templates:
     index: ((KUBE_COMPONENT_INDEX))((^KUBE_COMPONENT_INDEX))0((/KUBE_COMPONENT_INDEX))
     ip: '"((IP_ADDRESS))"'
-    networks.default.dns_record_name: '"((#KUBE_COMPONENT_NAME))((KUBE_COMPONENT_NAME))((/KUBE_COMPONENT_NAME))((^KUBE_COMPONENT_NAME))((DNS_RECORD_NAME))((/KUBE_COMPONENT_NAME))"'
+    networks.default.dns_record_name: '"((DNS_RECORD_NAME))"'
     networks.default.ip: '"((IP_ADDRESS))"'
     properties.cf_mysql.mysql.advertise_host: mysql-((KUBE_COMPONENT_INDEX)).mysql-set.((KUBERNETES_NAMESPACE)).svc.((KUBERNETES_CLUSTER_DOMAIN))
     properties.encryption.encryption_keys: '[{"label":"smorgasbrod","passphrase":"((AEK_PASSWORD))"}]'
@@ -242,6 +242,9 @@ variables:
 - name: HELM_IS_INSTALL
   options:
     type: environment
+    description: >
+      This is an environment variable built-in by fissile.
+      It's set directly from the Release.IsInstall Helm property.
 - name: INTERNAL_CA_CERT
   options:
     secret: true
@@ -270,21 +273,36 @@ variables:
 - name: KUBERNETES_CLUSTER_DOMAIN
   options:
     type: environment
+    description: >
+      The cluster domain used by Kubernetes.
+      If left empty, each container will try to determine the correct value based on /etc/resolv.conf
+      You can read more about it in the Kubernetes Documentation https://kubernetes.io/docs/concepts/services-networking/dns-pod-service/
 - name: KUBERNETES_NAMESPACE
   options:
     type: environment
+    description: 'The name of the kubernetes namespace all components will run in.
+      This parameter cannot be set by the user. Its value is supplied by the kubernetes
+      runtime.
+
+'
 - name: KUBE_COMPONENT_INDEX
   options:
     type: environment
-- name: KUBE_COMPONENT_NAME
-  options:
-    type: environment
+    description: >
+      This is an environment variable built-in by fissile.
+      It's set to a numeric index for roles with multiple replicas.
 - name: KUBE_SECRETS_GENERATION_COUNTER
   options:
     type: environment
+    description: >
+      This is an environment variable built-in by fissile.
+      It's automatically set to the kube.secrets_generation_counter Helm value, which controls secret rotation.
 - name: KUBE_SECRETS_GENERATION_NAME
   options:
     type: environment
+    description: >
+      This is an environment variable built-in by fissile.
+      Its default value is 'secret-1' and cannot be set by the user.
 - name: LOG_LEVEL
   options:
     default: info
