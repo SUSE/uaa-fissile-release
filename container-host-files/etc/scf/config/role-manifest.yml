@@ -145,6 +145,13 @@ instance_groups:
         - "curl --resolve uaa:8443:$(getent hosts ${HOSTNAME} | awk '{ print $1 }') --fail -H 'Host: uaa' -H 'Accept: application/json' https://uaa:8443/info"
   configuration:
     templates:
+      properties.login.smtp.auth: ((SMTP_AUTH))
+      properties.login.smtp.from_address: ((SMTP_FROM_ADDRESS))
+      properties.login.smtp.host: ((SMTP_HOST))
+      properties.login.smtp.password: ((SMTP_PASSWORD))
+      properties.login.smtp.port: ((SMTP_PORT))
+      properties.login.smtp.starttls: ((SMTP_STARTTLS))
+      properties.login.smtp.user: ((SMTP_USER))
       properties.uaa.logging_level: ((LOG_LEVEL_LOG4J))((#LOG_LEVEL))((/LOG_LEVEL))
       properties.uaadb.roles: '[{"name": "uaaadmin", "password": "((UAADB_PASSWORD))", "tag": "admin"}]'
       properties.wait-for-database.hostname: mysql-set
@@ -373,6 +380,34 @@ variables:
     description: The protocol used by rsyslog to talk to the log destination. The
       allowed values are tcp, and udp. The default is tcp.
     required: true
+- name: SMTP_AUTH
+  options:
+    default: false
+    description: >
+      If true, authenticate against the SMTP server using AUTH command.
+      See https://javamail.java.net/nonav/docs/api/com/sun/mail/smtp/package-summary.html
+- name: SMTP_FROM_ADDRESS
+  options:
+    description: SMTP from address, for password reset emails etc.
+- name: SMTP_HOST
+  options:
+    description: SMTP server host address, for password reset emails etc.
+- name: SMTP_PASSWORD
+  options:
+    description: SMTP server password, for password reset emails etc.
+- name: SMTP_PORT
+  options:
+    default: 25
+    description: SMTP server port, for password reset emails etc.
+- name: SMTP_STARTTLS
+  options:
+    default: false
+    description: >
+      If true, send STARTTLS command before logging in to SMTP server.
+      See https://javamail.java.net/nonav/docs/api/com/sun/mail/smtp/package-summary.html
+- name: SMTP_USER
+  options:
+    description: SMTP server username, for password reset emails etc.
 - name: UAADB_PASSWORD
   options:
     secret: true
