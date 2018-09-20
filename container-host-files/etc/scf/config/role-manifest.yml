@@ -21,6 +21,25 @@ instance_groups:
       mysql: {}
     properties:
       bosh_containerization:
+        run:
+          scaling:
+            ha: 2
+            min: 1
+            max: 3
+          capabilities: []
+          persistent-volumes:
+            - path: /var/vcap/store
+              tag: mysql-data
+              size: 20
+          shared-volumes: []
+          memory: 1900
+          virtual-cpus: 2
+          healthcheck:
+            slow_startup: true
+            readiness:
+              command:
+              - curl --silent --fail http://${HOSTNAME}:9200/
+              - curl --silent --fail http://${HOSTNAME}:1936/
         ports:
         - name: 'mysql'
           protocol: 'TCP'
@@ -64,29 +83,6 @@ instance_groups:
           internal: 1936
   tags:
   - sequential-startup
-  processes:
-  - name: mariadb_ctrl
-  - name: galera-healthcheck
-  - name: gra-log-purger-executable
-  run:
-    scaling:
-      ha: 2
-      min: 1
-      max: 3
-    capabilities: []
-    persistent-volumes:
-      - path: /var/vcap/store
-        tag: mysql-data
-        size: 20
-    shared-volumes: []
-    memory: 1900
-    virtual-cpus: 2
-    healthcheck:
-      slow_startup: true
-      readiness:
-        command:
-        - curl --silent --fail http://${HOSTNAME}:9200/
-        - curl --silent --fail http://${HOSTNAME}:1936/
   configuration:
     templates:
       properties.cf_mysql.external_host: "((DOMAIN))"
@@ -114,6 +110,20 @@ instance_groups:
     release: uaa
     properties:
       bosh_containerization:
+        run:
+          scaling:
+            ha: 2
+            min: 1
+            max: 65535
+          capabilities: []
+          persistent-volumes: []
+          shared-volumes: []
+          memory: 2205
+          virtual-cpus: 2
+          healthcheck:
+            readiness:
+              command:
+              - "curl --resolve uaa:8443:$(getent hosts ${HOSTNAME} | awk '{ print $1 }') --fail -H 'Host: uaa' -H 'Accept: application/json' https://uaa:8443/info"
         ports:
         - name: uaa
           protocol: TCP
@@ -125,24 +135,8 @@ instance_groups:
           external: 2793
           internal: 8443
           public: true
-  processes:
-  - uaa
   tags:
   - sequential-startup
-  run:
-    scaling:
-      ha: 2
-      min: 1
-      max: 65535
-    capabilities: []
-    persistent-volumes: []
-    shared-volumes: []
-    memory: 2205
-    virtual-cpus: 2
-    healthcheck:
-      readiness:
-        command:
-        - "curl --resolve uaa:8443:$(getent hosts ${HOSTNAME} | awk '{ print $1 }') --fail -H 'Host: uaa' -H 'Accept: application/json' https://uaa:8443/info"
   configuration:
     templates:
       properties.login.smtp.auth: ((SMTP_AUTH))
@@ -163,19 +157,21 @@ instance_groups:
   jobs:
   - name: generate-secrets
     release: scf-helper
+    properties:
+      bosh_containerization:
+        run:
+          scaling:
+            min: 1
+            max: 1
+          flight-stage: pre-flight
+          capabilities: []
+          persistent-volumes: []
+          shared-volumes: []
+          memory: 256
+          virtual-cpus: 1
+          service-account: secret-generator
   environment_scripts:
   - scripts/configure-HA-hosts.sh
-  run:
-    scaling:
-      min: 1
-      max: 1
-    flight-stage: pre-flight
-    capabilities: []
-    persistent-volumes: []
-    shared-volumes: []
-    memory: 256
-    virtual-cpus: 1
-    service-account: secret-generator
   configuration:
     templates:
       properties.scf.secrets.cert_expiration: ((CERT_EXPIRATION))
