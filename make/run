@@ -5,6 +5,14 @@ set -o errexit -o nounset
 GIT_ROOT=${GIT_ROOT:-$(git rev-parse --show-toplevel)}
 NAMESPACE="uaa"
 
+is_minikube() {
+    kubectl get nodes -o jsonpath='{.items[].metadata.name}' | grep --silent minikube
+}
+
+has_release() {
+    test -n "$(helm list --all --short "${NAMESPACE}")"
+}
+
 has_namespace() {
     kubectl get namespace --output=name "${NAMESPACE}" >/dev/null 2>/dev/null
 }
@@ -12,6 +20,10 @@ has_namespace() {
 stampy "${GIT_ROOT}/uaa_metrics.csv" "$0" make-run start
 
 stampy "${GIT_ROOT}/uaa_metrics.csv" "$0" make-run::namespace start
+if has_release ; then
+    helm delete --purge "${NAMESPACE}"
+fi
+
 if has_namespace ; then
     kubectl delete namespace "${NAMESPACE}"
 fi
@@ -26,12 +38,16 @@ stampy "${GIT_ROOT}/uaa_metrics.csv" "$0" make-run::namespace end
 
 stampy "${GIT_ROOT}/uaa_metrics.csv" "$0" make-run::create start
 
-kubectl get storageclass persistent 2>/dev/null || {
+kubectl get storageclass | grep --silent '(default)' 2>/dev/null || {
     perl -p -e 's@storage.k8s.io/v1beta1@storage.k8s.io/v1@g' \
         "${GIT_ROOT}/kube-test/storage-class-host-path.yml" | \
     kubectl create -f -
 }
+STORAGE_CLASS="${STORAGE_CLASS:=$(kubectl get storageclass 2>/dev/null | awk '/(default)/ { print $1 ; exit }')}"
 
+if is_minikube ; then
+    DOMAIN="${DOMAIN:-$(minikube ip).nip.io}"
+fi
 DOMAIN=${DOMAIN:-}
 DEFAULTS_ENV=container-host-files/etc/scf/config/env/defaults.env
 
@@ -52,6 +68,7 @@ helm install helm \
      --set "env.DOMAIN=${DOMAIN}" \
      --set "secrets.UAA_ADMIN_CLIENT_SECRET=${UAA_ADMIN_CLIENT_SECRET}" \
      --set "kube.external_ips[0]=$(dig +short "${DOMAIN}")" \
+     --set "kube.storage_class.persistent=${STORAGE_CLASS}" \
      "$@"
 
 stampy "${GIT_ROOT}/uaa_metrics.csv" "$0" make-run::create end
