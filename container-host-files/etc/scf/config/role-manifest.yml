@@ -32,7 +32,7 @@ instance_groups:
               tag: mysql-data
               size: 20
           shared-volumes: []
-          memory: 1900
+          memory: 1400
           virtual-cpus: 2
           healthcheck:
             slow_startup: true
@@ -118,7 +118,7 @@ instance_groups:
           capabilities: []
           persistent-volumes: []
           shared-volumes: []
-          memory: 2205
+          memory: 2100
           virtual-cpus: 2
           healthcheck:
             readiness:
