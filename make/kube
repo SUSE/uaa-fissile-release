@@ -11,31 +11,18 @@ if [ -z "${APP_VERSION:-}" ]; then
   exit 1
 fi
 
-DOMAIN=${DOMAIN:-}
-DEFAULTS_ENV=container-host-files/etc/scf/config/env/defaults.env
-if test -n "${DOMAIN}"; then
-    TMP="$(mktemp -d)"
-    cp "${DEFAULTS_ENV}" "${TMP}"
-    trap "rm -rf ${TMP}" EXIT
-    DEFAULTS_ENV="${TMP}/$(basename "${DEFAULTS_ENV}")"
-    sed -i "s/^DOMAIN=.*/DOMAIN=${DOMAIN}/" "${DEFAULTS_ENV}"
-fi
-ENV_FILES="$DEFAULTS_ENV"
-
 CREATE_HELM_CHART=false
 BUILD_TARGET=kube
 
 if [ "${1:-}" = "helm" ]; then
     CREATE_HELM_CHART=true
     BUILD_TARGET=helm
-    ENV_FILES=
 fi
 
 rm -rf "${BUILD_TARGET}"
 
 fissile build "${BUILD_TARGET}" \
-    --output-dir="${BUILD_TARGET}" \
-    --defaults-file="$(echo "${ENV_FILES}" | tr ' ' ,)"
+    --output-dir="${BUILD_TARGET}"
 
 if [ "${BUILD_TARGET}" = "helm" ]; then
     chart_name_suffix=""

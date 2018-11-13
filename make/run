@@ -37,25 +37,13 @@ kubectl get storageclass | grep --silent '(default)' 2>/dev/null || {
 }
 STORAGE_CLASS="${STORAGE_CLASS:=$(kubectl get storageclass 2>/dev/null | awk '/(default)/ { print $1 ; exit }')}"
 
-DOMAIN=${DOMAIN:-}
-DEFAULTS_ENV=container-host-files/etc/scf/config/env/defaults.env
-
-if test -n "${DOMAIN}"; then
-    TMP="$(mktemp -d)"
-    cp "${DEFAULTS_ENV}" "${TMP}"
-    # shellcheck disable=SC2064
-    trap "rm -rf ${TMP}" EXIT
-    DEFAULTS_ENV="${TMP}/$(basename "${DEFAULTS_ENV}")"
-    sed -i "s/^DOMAIN=.*/DOMAIN=${DOMAIN}/" "${DEFAULTS_ENV}"
-fi
-
-source "${DEFAULTS_ENV}"
+DOMAIN=${DOMAIN:-cf-dev.io}
 
 helm_args=(
     --name "${NAMESPACE}"
     --namespace "${NAMESPACE}"
+    --values "../../bin/settings.yaml"
     --set "env.DOMAIN=${DOMAIN}"
-    --set "secrets.UAA_ADMIN_CLIENT_SECRET=${UAA_ADMIN_CLIENT_SECRET}"
     --set "kube.external_ips[0]=$(getent hosts "${DOMAIN}" | awk 'NR=1{print $1}')"
     --set "kube.storage_class.persistent=${STORAGE_CLASS}"
 )

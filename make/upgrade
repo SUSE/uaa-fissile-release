@@ -19,24 +19,12 @@ echo Upgrading ${NAMESPACE} release \"${RELEASE}\" ...
 stampy "${GIT_ROOT}/uaa_metrics.csv" "$0" make-run start
 stampy "${GIT_ROOT}/uaa_metrics.csv" "$0" make-run::upgrade start
 
-DOMAIN=${DOMAIN:-}
-DEFAULTS_ENV=container-host-files/etc/scf/config/env/defaults.env
-
-if test -n "${DOMAIN}"; then
-    TMP="$(mktemp -d)"
-    cp "${DEFAULTS_ENV}" "${TMP}"
-    # shellcheck disable=SC2064
-    trap "rm -rf ${TMP}" EXIT
-    DEFAULTS_ENV="${TMP}/$(basename "${DEFAULTS_ENV}")"
-    sed -i "s/^DOMAIN=.*/DOMAIN=${DOMAIN}/" "${DEFAULTS_ENV}"
-fi
-
-source "${DEFAULTS_ENV}"
+DOMAIN=${DOMAIN:-cf-dev.io}
 
 helm upgrade ${RELEASE} helm \
      --namespace "${NAMESPACE}" \
+     --values "../../bin/settings.yaml" \
      --set "env.DOMAIN=${DOMAIN}" \
-     --set "secrets.UAA_ADMIN_CLIENT_SECRET=${UAA_ADMIN_CLIENT_SECRET}" \
      --set "kube.external_ips[0]=$(dig +short "${DOMAIN}")" \
      "$@"
 
