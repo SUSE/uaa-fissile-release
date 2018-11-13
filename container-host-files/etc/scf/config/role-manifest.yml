@@ -1,8 +1,6 @@
 ---
 instance_groups:
 - name: mysql
-  environment_scripts:
-  - scripts/configure-HA-hosts.sh
   scripts:
   - scripts/create_mysql_data_tmp.sh
   - scripts/chown_vcap_store.sh
@@ -94,7 +92,6 @@ instance_groups:
       properties.cf_mysql.proxy.api_password: ((MYSQL_PROXY_ADMIN_PASSWORD))
 - name: uaa
   environment_scripts:
-  - scripts/configure-HA-hosts.sh
   - scripts/log_level_mappings.sh
   scripts:
   - scripts/authorize_internal_ca.sh
@@ -151,8 +148,6 @@ instance_groups:
       properties.wait-for-database.hostname: mysql-set
       properties.wait-for-database.port: 3306
 - name: secret-generation
-  environment_scripts:
-  - scripts/configure-HA-hosts.sh
   type: bosh-task
   jobs:
   - name: generate-secrets
@@ -170,8 +165,6 @@ instance_groups:
           memory: 256
           virtual-cpus: 1
           service-account: secret-generator
-  environment_scripts:
-  - scripts/configure-HA-hosts.sh
   configuration:
     templates:
       properties.scf.secrets.cert_expiration: ((CERT_EXPIRATION))
