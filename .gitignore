@@ -14,3 +14,4 @@ uaa_metrics.csv
 /helm/
 /secrets/
 _work/
+.final_releases

@@ -21,19 +21,11 @@ upgrade:
 
 ########## BOSH RELEASE TARGETS ##########
 
-mysql-release:
-	RUBY_VERSION=2.3.1 make/bosh-release src/cf-mysql-release
-
-uaa-release:
-	make/bosh-release src/uaa-release
-
 scf-helper-release:
 	cp container-host-files/etc/scf/config/role-manifest.yml src/scf-helper-release/src; \
 	make/bosh-release src/scf-helper-release
 
 releases: \
-	mysql-release \
-	uaa-release \
 	scf-helper-release \
 	${NULL}
 
