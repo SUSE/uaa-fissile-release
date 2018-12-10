@@ -27,7 +27,7 @@ declare -A MISSING_REASONS=(
 )
 
 declare -A REMAINING_REASONS=(
-    [src/scf-helper-release]="not upstream"
+    #[src/scf-helper-release]="not upstream"
 )
 
 # Save, for debugging
