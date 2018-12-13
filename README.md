@@ -90,13 +90,6 @@ cp build/linux-amd64/stampy $GOBIN/stampy
     ```sh
       make certs
     ```
-
-1. Create the releases:
-
-   ```sh
-     make releases
-   ```
-
 1. Get the opensuse stemcell:
 
    ```sh
@@ -163,88 +156,6 @@ instructions there.
 
 # Development FAQ
 
-### How do I bump the submodules for the various releases?
+### How do I bump the various releases?
 
-__Note:__ Because this process involves cloning and building a release, it may take a long time.
-
-__Note:__ This description assumes operation from within the SCF release.
-
-This section describes how to bump all the submodules at the same
-time. This is the easiest way because we have scripts helping us
-here.
-
-1. On the host machine run
-
-    ```bash
-       bin/update-releases.sh
-    ```
-
-    This pulls the CF release information from the enclosing SCF
-    release. It is assumed that this SCF is bumped itself, and has a
-    `_work` directory holding the bump state.  When doing this outside
-    of an SCF release use
-
-    ```bash
-       bin/update-releases.sh /path/to/scf
-    ```
-
-    instead to specify which SCF release to use as the source of the version
-    information.
-
-    It places the version information it used in a subdirectory `_work`.
-
-    `ATTENTION`: The script may mention submodules it has no
-    information about, making manual matching of versions to commit
-    the order of the day. Where possible the script will have created
-    at least a clone of the release to start from.
-
-1. Next up, we need the BOSH releases for the cloned and bumped submodules. Run
-
-    ```bash
-    bin/create-clone-releases.sh
-    ```
-
-    This command will place the log output for the individual releases
-    into the sub directory `_work/LOG/ccr`.
-
-1. With this done we can now compare the BOSH releases of originals
-   and clones, telling us what properties have changed (added,
-   removed, changed descriptions and values, ...).
-
-    On the host machine run
-
-    ```bash
-    bin/diff-releases.sh
-    ```
-
-    This command will place the log output and differences for the
-    individual releases into the sub directory `_work/LOG/dr`.
-
-1. Act on configuration changes:
-
-    __Important:__ If you are not sure how to treat a configuration
-    setting, discuss it with the SCF team.
-
-    For any configuration changes discovered in step the previous
-    step, you can do one of the following:
-
-    * Keep the defaults in the new specification.
-    * Add an opinion (static defaults) to `./container-host-files/etc/scf/config/opinions.yml`.
-    * Add a template and an exposed environment variable to `./container-host-files/etc/scf/config/role-manifest.yml`.
-
-    Define any secrets in the dark opinions file `./container-host-files/etc/scf/config/dark-opinions.yml` and expose them as environment variables.
-
-1. Evaluate role changes:
-
-    1. Consult the release notes of the new version of the release.
-    1. If there are any role changes, discuss them with the SCF team, [follow steps 3 and 4 from this guide](#how-do-i-add-a-new-bosh-release-to-scf).
-
-1. Bump the real submodule:
-
-    1. Bump the real submodule and begin testing.
-    1. Remove the clone you used for the release.
-
-1. Test the release by running the `make <release-name>-release compile images run` command.
-
-   Alternatively move to the enclosing SCF release and test from
-   there, as part of the whole system.
+You can find the releases in `container-host-files/etc/scf/config/role-manifest.yml`. These are final releases and to bump them you only have to change the relevant lines in that file (url, version, sha1).
