@@ -36,4 +36,5 @@ description: A Helm chart for SUSE UAA
 name: uaa${chart_name_suffix}
 version: ${GIT_TAG}
 EOF
+    cp chart-parts/* "${BUILD_TARGET}/templates/"
 fi
