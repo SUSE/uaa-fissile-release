@@ -205,11 +205,33 @@ configuration:
       - apiGroups: [""]
         resources: [configmaps ,secrets]
         verbs: [create, get, list, patch, update, delete]
+    cluster-roles:
+      nonprivileged:
+      - apiGroups: [extensions]
+        resourceNames: [nonprivileged]
+        resources: [podsecuritypolicies]
+        verbs: [use]
+    pod-security-policies:
+      nonprivileged:
+        fsGroup: { rule: RunAsAny }
+        runAsUser: { rule: RunAsAny }
+        seLinux: { rule: RunAsAny }
+        supplementalGroups: { rule: RunAsAny }
+        volumes:
+        - configMap
+        - secret
+        - emptyDir
+        - downwardAPI
+        - projected
+        - persistentVolumeClaim
+        - nfs
     accounts:
       default:
         roles: [configgin-role]
+        cluster-roles: [nonprivileged]
       secret-generator:
         roles: [configgin-role, secrets-role]
+        cluster-roles: [nonprivileged]
   templates:
     index: ((KUBE_COMPONENT_INDEX))((^KUBE_COMPONENT_INDEX))0((/KUBE_COMPONENT_INDEX))
     ip: '"((IP_ADDRESS))"'
