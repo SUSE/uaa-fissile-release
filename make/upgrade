@@ -25,7 +25,7 @@ helm upgrade ${RELEASE} helm \
      --namespace "${NAMESPACE}" \
      --values "../../bin/settings.yaml" \
      --set "env.DOMAIN=${DOMAIN}" \
-     --set "kube.external_ips[0]=$(dig +short "${DOMAIN}")" \
+     --set "kube.external_ips[0]=$(getent hosts "${DOMAIN}" | awk 'NR=1{print $1}')" \
      "$@"
 
 stampy "${GIT_ROOT}/uaa_metrics.csv" "$0" make-run::upgrade end
