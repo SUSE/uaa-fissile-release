@@ -178,7 +178,7 @@ instance_groups:
           shared-volumes: []
           memory: 256
           virtual-cpus: 1
-          service-account: secret-gen
+          service-account: secret-generator
   configuration:
     templates:
       properties.scf.secrets.cert_expiration: ((CERT_EXPIRATION))
@@ -206,7 +206,7 @@ configuration:
         resources: [configmaps ,secrets]
         verbs: [create, get, list, patch, update, delete]
     cluster-roles:
-      nonpriv:
+      nonprivileged:
       - apiGroups: [extensions]
         resourceNames: [nonprivileged]
         resources: [podsecuritypolicies]
@@ -228,10 +228,10 @@ configuration:
     accounts:
       default:
         roles: [configgin-role]
-        cluster-roles: [nonpriv]
-      secret-gen:
+        cluster-roles: [nonprivileged]
+      secret-generator:
         roles: [configgin-role, secrets-role]
-        cluster-roles: [nonpriv]
+        cluster-roles: [nonprivileged]
   templates:
     index: ((KUBE_COMPONENT_INDEX))((^KUBE_COMPONENT_INDEX))0((/KUBE_COMPONENT_INDEX))
     ip: '"((IP_ADDRESS))"'
