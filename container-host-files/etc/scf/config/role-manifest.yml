@@ -1,13 +1,13 @@
 ---
 releases:
 - name: cf-mysql
-  url: https://bosh.io/d/github.com/cloudfoundry/cf-mysql-release?v=36.15.0
-  version: 36.15.0
-  sha1: 0764d9d6aae7cefd10019437ed83e7715e614633
-- name: "uaa"
-  version: "60.2"
-  url: "https://bosh.io/d/github.com/cloudfoundry/uaa-release?v=60.2"
-  sha1: "667af417997467681fddf13c78e5a11c6f4a9d15"
+  version: "36.17.0"
+  url: "https://bosh.io/d/github.com/cloudfoundry/cf-mysql-release?v=36.17.0"
+  sha1: "04cbfafa0a2c11b133da20de8282595c98bc0049"
+- name: uaa
+  version: "68.0"
+  url: "https://bosh.io/d/github.com/cloudfoundry/uaa-release?v=68.0"
+  sha1: "a06e5390463c760bcbcc0bacaec063f41a5ea089"
 - name: "scf-helper"
   version: "1.0.1"
   url: "https://s3.amazonaws.com/suse-final-releases/scf-helper-release-1.0.1.tgz"
