@@ -134,7 +134,7 @@ instance_groups:
           healthcheck:
             readiness:
               command:
-              - "curl --resolve uaa:8443:$(getent hosts ${HOSTNAME} | awk '{ print $1 }') --fail -H 'Host: uaa' -H 'Accept: application/json' https://uaa:8443/info"
+              - "curl --resolve uaa.${DOMAIN}:8443:$(getent hosts ${HOSTNAME} | awk '{ print $1 }') --fail -H \"Host: uaa.${DOMAIN}\" -H 'Accept: application/json' https://uaa.${DOMAIN}:8443/info"
         ports:
         - name: uaa
           protocol: TCP
