@@ -21,12 +21,25 @@ stampy "${GIT_ROOT}/uaa_metrics.csv" "$0" make-run::upgrade start
 
 DOMAIN=${DOMAIN:-cf-dev.io}
 
-helm upgrade ${RELEASE} helm \
-     --namespace "${NAMESPACE}" \
-     --values "../../bin/settings.yaml" \
-     --set "env.DOMAIN=${DOMAIN}" \
-     --set "kube.external_ips[0]=$(getent hosts "${DOMAIN}" | awk 'NR=1{print $1}')" \
-     "$@"
+helm_args=(
+    --namespace "${NAMESPACE}"
+    --values "../../bin/settings.yaml"
+    --set "env.DOMAIN=${DOMAIN}"
+    --set "kube.storage_class.persistent=${STORAGE_CLASS}"
+)
+
+if [ -n "${INGRESS_CONTROLLER}" ]; then
+    helm_args+=(
+        --set "services.ingress.class=${INGRESS_CONTROLLER}"
+        --set "services.ingress.backends.uaa.port=2793"
+    )
+else
+    helm_args+=(
+        --set "kube.external_ips[0]=$(getent hosts "${DOMAIN}" | awk 'NR=1{print $1}')"
+    )
+fi
+
+helm upgrade "${RELEASE}" helm "${helm_args[@]}" "$@"
 
 stampy "${GIT_ROOT}/uaa_metrics.csv" "$0" make-run::upgrade end
 stampy "${GIT_ROOT}/uaa_metrics.csv" "$0" make-run 'done'
