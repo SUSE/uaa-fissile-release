@@ -27,7 +27,7 @@ helm_args=(
     --set "env.DOMAIN=${DOMAIN}"
 )
 
-if [ -n "${INGRESS_CONTROLLER}" ]; then
+if [ -n "${INGRESS_CONTROLLER:-}" ]; then
     helm_args+=(
         --set "services.ingress.class=${INGRESS_CONTROLLER}"
         --set "services.ingress.backends.uaa.port=2793"
