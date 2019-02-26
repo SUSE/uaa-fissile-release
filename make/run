@@ -51,6 +51,7 @@ if [ -n "${INGRESS_CONTROLLER:-}" ]; then
     helm_args+=(
         --set "services.ingress.class=${INGRESS_CONTROLLER}"
         --set "services.ingress.backends.uaa.port=2793"
+        --set "env.UAA_PUBLIC_PORT=443"
     )
 else
     helm_args+=(

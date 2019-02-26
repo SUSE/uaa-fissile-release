@@ -242,7 +242,7 @@ configuration:
     properties.fissile.monit.password: '"((MONIT_PASSWORD))"'
     properties.login.saml.serviceProviderCertificate: '"((SAML_SERVICEPROVIDER_CERT))"'
     properties.login.saml.serviceProviderKey: '"((SAML_SERVICEPROVIDER_CERT_KEY))"'
-    properties.login.url: "https://login.((DOMAIN)):2793"
+    properties.login.url: "https://login.((DOMAIN)):((UAA_PUBLIC_PORT))"
     properties.uaa.admin.client_secret: '"((UAA_ADMIN_CLIENT_SECRET))"'
     properties.uaa.clients: '{"default_zone_admin": {"secret": "((UAA_ADMIN_CLIENT_SECRET))", "authorized-grant-types": "client_credentials", "scope": "uaa.admin", "authorities": "uaa.admin"}}'
     properties.uaa.clients.default_zone_admin.secret: '"((UAA_ADMIN_CLIENT_SECRET))"'
@@ -251,8 +251,14 @@ configuration:
     # Save INTERNAL_CA cert and key in the kube secrets, so that a future update can use them to sign additional certs
     properties.uaa.sslCertificate: ((UAA_SERVER_CERT))((#INTERNAL_CA_CERT))((/INTERNAL_CA_CERT))
     properties.uaa.sslPrivateKey: ((UAA_SERVER_CERT_KEY))((#INTERNAL_CA_CERT_KEY))((/INTERNAL_CA_CERT_KEY))
-    properties.uaa.url: "https://uaa.((DOMAIN)):2793"
-    properties.uaa.zones.internal.hostnames: '["uaa","uaa.((KUBERNETES_NAMESPACE))","uaa.((KUBERNETES_NAMESPACE)).svc","uaa.((KUBERNETES_NAMESPACE)).svc.((KUBERNETES_CLUSTER_DOMAIN))"]'
+    properties.uaa.url: "https://uaa.((DOMAIN)):((UAA_PUBLIC_PORT))"
+    properties.uaa.zones.internal.hostnames: >-
+      [
+        "uaa",
+        "uaa.((KUBERNETES_NAMESPACE))",
+        "uaa.((KUBERNETES_NAMESPACE)).svc",
+        "uaa.((KUBERNETES_NAMESPACE)).svc.((KUBERNETES_CLUSTER_DOMAIN))"
+      ]
 variables:
 - name: AEK_PASSWORD
   options:
@@ -266,10 +272,8 @@ variables:
     default: 10950
 - name: DOMAIN
   options:
-    description: 'Base domain name of the UAA endpoint; `uaa.${DOMAIN}` must be correctly
-      configured to point to this UAA instance
-
-'
+    description: Base domain name of the UAA endpoint; `uaa.${DOMAIN}` must be correctly
+      configured to point to this UAA instance.
     required: true
 - name: HELM_IS_INSTALL
   options:
@@ -444,6 +448,10 @@ variables:
     description: The password of the admin client - a client named admin with uaa.admin
       as an authority.
     required: true
+- name: UAA_PUBLIC_PORT
+  options:
+    default: 2793
+    description: The TCP port to report as the public port for the UAA server (root zone).
 - name: UAA_SERVER_CERT
   options:
     secret: true
