@@ -97,7 +97,6 @@ instance_groups:
   - sequential-startup
   configuration:
     templates:
-      properties.cf_mysql.external_host: "((DOMAIN))"
       properties.cf_mysql.mysql.admin_password: "((MYSQL_ADMIN_PASSWORD))"
       properties.cf_mysql.mysql.cluster_health.password: '((MYSQL_CLUSTER_HEALTH_PASSWORD))'
       properties.cf_mysql.mysql.galera_healthcheck.db_password: "((MYSQL_ADMIN_PASSWORD))"
