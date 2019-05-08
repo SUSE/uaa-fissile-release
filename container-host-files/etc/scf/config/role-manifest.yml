@@ -1,9 +1,9 @@
 ---
 releases:
 - name: cf-mysql
-  version: 36.17.0
-  url: https://bosh.io/d/github.com/cloudfoundry/cf-mysql-release?v=36.17.0
-  sha1: 04cbfafa0a2c11b133da20de8282595c98bc0049
+  url: https://bosh.io/d/github.com/cloudfoundry/cf-mysql-release?v=36.15.0
+  version: 36.15.0
+  sha1: 0764d9d6aae7cefd10019437ed83e7715e614633
 - name: uaa
   version: 68.0
   url: https://bosh.io/d/github.com/cloudfoundry/uaa-release?v=68.0
