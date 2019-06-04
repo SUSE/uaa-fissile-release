@@ -38,4 +38,5 @@ name: uaa${chart_name_suffix}
 version: ${GIT_TAG}
 EOF
     cp chart-parts/* "${BUILD_TARGET}/templates/"
+    ruby ../../bin/image-list.rb "${BUILD_TARGET}"
 fi
