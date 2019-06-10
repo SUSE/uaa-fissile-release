@@ -1,9 +1,17 @@
 ---
 releases:
+- name: bpm
+  version: "1.0.3"
+  url: "https://bosh.io/d/github.com/cloudfoundry/bpm-release?v=1.0.3"
+  sha1: "5116e990fe1572331dbaf79fa7c5559d0ce793a8"
 - name: cf-mysql
   url: https://bosh.io/d/github.com/cloudfoundry/cf-mysql-release?v=36.15.0
   version: 36.15.0
   sha1: 0764d9d6aae7cefd10019437ed83e7715e614633
+- name: pxc
+  url: https://bosh.io/d/github.com/cloudfoundry-incubator/pxc-release?v=0.16.0
+  version: 0.16.0
+  sha1: eb53d366af2d6e49e8c2ac834191547b2ba44d30
 - name: uaa
   version: 68.0
   url: https://bosh.io/d/github.com/cloudfoundry/uaa-release?v=68.0
@@ -16,93 +24,169 @@ releases:
 instance_groups:
 - name: mysql
   scripts:
-  - scripts/create_mysql_data_tmp.sh
+  - scripts/create_mysql_data_tmp.sh # Deprecated. Should go away with cf-mysql-release.
   - scripts/chown_vcap_store.sh
-  - scripts/patches/fix_mysql_advertise_ip.sh
-  - scripts/patches/enable_mysql_galera_bootstrap.sh
-  - scripts/patches/fix_monit_rsyslog.sh
+  - scripts/pxc/create_directories.sh
+  - scripts/patches/fix_mysql_advertise_ip.sh # Deprecated. Should go away with cf-mysql-release.
   - scripts/forward_logfiles.sh
+  - scripts/patches/fix_monit_rsyslog.sh
+  post_config_scripts:
+  - scripts/bpm_kube_dns.rb
   jobs:
-  - name: global-uaa-properties # needs to be first so images use it for processing monit templates
+  - name: global-uaa-properties # needs to be first so images use it for processing monit templates.
     release: scf-helper
   - name: patch-properties
     release: scf-helper
-  - name: mysql
-    release: cf-mysql
+  - name: pxc-mysql
+    release: pxc
     provides:
       mysql: {}
     properties:
       bosh_containerization:
+        ports:
+        - name: pxc-mysql
+          protocol: TCP
+          internal: 3306
+        - name: galera-tcp
+          protocol: TCP
+          internal: 4567
+        - name: galera-agent
+          protocol: TCP
+          internal: 9200
         run:
           scaling:
-            ha: 2
             min: 1
-            max: 3
-          capabilities: []
-          persistent-volumes:
-            - path: /var/vcap/store
-              tag: mysql-data
-              size: 20
-          shared-volumes: []
-          memory: 1400
+            max: 7
+            ha: 3
+          volumes:
+          - path: /var/vcap/store
+            type: persistent
+            tag: mysql-data
+            size: 20
+          memory: 2500
           virtual-cpus: 2
           healthcheck:
-            slow_startup: true
             readiness:
               command:
-              - curl --silent --fail http://${HOSTNAME}:9200/
-              - curl --silent --fail http://${HOSTNAME}:1936/
-        ports:
-        - name: 'mysql'
-          protocol: 'TCP'
-          internal: 13306
-          public: false
-        - name: 'galera-tcp'
-          protocol: 'TCP'
-          internal: 4567
-          public: false
-        - name: 'galera-udp'
-          protocol: 'UDP'
-          internal: 4567
-          public: false
-        - name: 'galera-ist'
-          protocol: 'TCP'
-          internal: 4568
-          public: false
-        - name: 'healthcheck'
-          protocol: 'TCP'
-          internal: 9200
-          public: false
-        - name: 'xtrabackup'
-          protocol: 'TCP'
-          internal: 4444
-          public: false
-  - name: proxy
+              - "[[ $(curl --silent http://${HOSTNAME}:9200/api/v1/status | jq '.healthy') == true ]]"
+          affinity:
+            podAntiAffinity:
+              preferredDuringSchedulingIgnoredDuringExecution:
+              - weight: 100
+                podAffinityTerm:
+                  labelSelector:
+                    matchExpressions:
+                    - key: "app.kubernetes.io/component"
+                      operator: In
+                      values:
+                      - mysql
+                  topologyKey: "beta.kubernetes.io/os"
+  - name: galera-agent
+    release: pxc
+  - name: gra-log-purger
+    release: pxc
+  - name: cluster-health-logger
+    release: pxc
+  - name: bootstrap
+    release: pxc
+  - name: mysql
     release: cf-mysql
+  - name: bpm
+    release: bpm
+    properties:
+      bosh_containerization:
+        run:
+          privileged: true
+  tags:
+  - sequential-startup
+  configuration:
+    templates:
+      properties.admin_password: ((MYSQL_ADMIN_PASSWORD))
+
+      # Deprecation start. Should go away with cf-mysql-release. >>
+      properties.cf_mysql.mysql.admin_password: ((MYSQL_ADMIN_PASSWORD))
+      properties.cf_mysql.mysql.cluster_health.password: ((MYSQL_CLUSTER_HEALTH_PASSWORD))
+      properties.cf_mysql.mysql.galera_healthcheck.db_password: ((MYSQL_ADMIN_PASSWORD))
+      properties.cf_mysql.mysql.galera_healthcheck.endpoint_password: ((GALERA_HEALTHCHECK_ENDPOINT_DATABASE_PASSWORD))
+      # << Deprecation end
+
+      properties.db_password: ((MYSQL_ADMIN_PASSWORD))
+      properties.endpoint_password: ((GALERA_HEALTHCHECK_ENDPOINT_DATABASE_PASSWORD))
+      properties.engine_config.binlog.enabled: false
+      properties.engine_config.galera.enabled: true
+      properties.max_open_files: 1500
+      properties.monit_startup_timeout: 300
+      properties.seeded_databases: '[{"name":"uaadb", "username": "uaaadmin", "password":"((UAADB_PASSWORD))"}]'
+      properties.tls.galera.ca: ((INTERNAL_CA_CERT))
+      properties.tls.galera.certificate: ((GALERA_SERVER_CERT))
+      properties.tls.galera.private_key: ((GALERA_SERVER_CERT_KEY))
+      properties.tls.server.ca: ((INTERNAL_CA_CERT))
+      properties.tls.server.certificate: ((MYSQL_SERVER_CERT))
+      properties.tls.server.private_key: ((MYSQL_SERVER_CERT_KEY))
+- name: mysql-proxy
+  scripts:
+  - scripts/forward_logfiles.sh
+  - scripts/patches/fix_monit_rsyslog.sh
+  post_config_scripts:
+  - scripts/bpm_kube_dns.rb
+  jobs:
+  - name: global-uaa-properties # needs to be first so images use it for processing monit templates.
+    release: scf-helper
+  - name: proxy
+    release: pxc
     provides:
       proxy: {}
     properties:
       bosh_containerization:
         ports:
-        - name: mysql-proxy
+        - name: api-proxy
+          protocol: TCP
+          internal: 8083
+        - name: pxc-mysql-proxy
           protocol: TCP
           internal: 3306
-        - name: api
-          protocol: TCP
-          internal: 80
         - name: healthck-proxy
           protocol: TCP
           internal: 1936
+        run:
+          scaling:
+            min: 1
+            max: 5
+            ha: 2
+          memory: 2500
+          virtual-cpus: 2
+          healthcheck:
+            readiness:
+              command:
+              - curl --silent --fail --head http://${HOSTNAME}:1936/
+          affinity:
+            podAntiAffinity:
+              preferredDuringSchedulingIgnoredDuringExecution:
+              - weight: 100
+                podAffinityTerm:
+                  labelSelector:
+                    matchExpressions:
+                    - key: "app.kubernetes.io/component"
+                      operator: In
+                      values:
+                      - mysql
+                  topologyKey: "beta.kubernetes.io/os"
+  - name: bpm
+    release: bpm
+    properties:
+      bosh_containerization:
+        run:
+          privileged: true
   tags:
   - sequential-startup
   configuration:
     templates:
-      properties.cf_mysql.mysql.admin_password: "((MYSQL_ADMIN_PASSWORD))"
-      properties.cf_mysql.mysql.cluster_health.password: '((MYSQL_CLUSTER_HEALTH_PASSWORD))'
-      properties.cf_mysql.mysql.galera_healthcheck.db_password: "((MYSQL_ADMIN_PASSWORD))"
-      properties.cf_mysql.mysql.galera_healthcheck.endpoint_password: "((MYSQL_GALERA_HEALTHCHECK_ENDPOINT_PASSWORD))"
-      properties.cf_mysql.mysql.seeded_databases: '[{"name":"uaadb", "username": "uaaadmin", "password":"((UAADB_PASSWORD))"}]'
-      properties.cf_mysql.proxy.api_password: ((MYSQL_PROXY_ADMIN_PASSWORD))
+      properties.api_force_https: false
+      properties.api_password: ((CF_MYSQL_PROXY_API_PASSWORD))
+      properties.api_port: 8083
+      properties.api_uri: mysql-proxy-set.((KUBERNETES_NAMESPACE)).svc.((KUBERNETES_CLUSTER_DOMAIN))((#KUBE_SIZING_MYSQL_COUNT))((/KUBE_SIZING_MYSQL_COUNT))
+      properties.api_username: mysql_proxy
+
 - name: uaa
   environment_scripts:
   - scripts/log_level_mappings.sh
@@ -158,7 +242,7 @@ instance_groups:
       properties.login.smtp.user: ((SMTP_USER))
       properties.uaa.logging_level: ((LOG_LEVEL_LOG4J))((#LOG_LEVEL))((/LOG_LEVEL))
       properties.uaadb.roles: '[{"name": "uaaadmin", "password": "((UAADB_PASSWORD))", "tag": "admin"}]'
-      properties.wait-for-database.hostname: mysql-set
+      properties.wait-for-database.hostname: mysql-proxy-set
       properties.wait-for-database.port: 3306
 - name: secret-generation
   type: bosh-task
@@ -211,7 +295,11 @@ configuration:
         verbs: [use]
     pod-security-policies:
       default:
+        allowPrivilegeEscalation: true
+        allowedCapabilities: ["*"]
+        defaultAllowPrivilegeEscalation: true
         fsGroup: { rule: RunAsAny }
+        privileged: true
         runAsUser: { rule: RunAsAny }
         seLinux: { rule: RunAsAny }
         supplementalGroups: { rule: RunAsAny }
@@ -233,7 +321,6 @@ configuration:
     ip: '"((IP_ADDRESS))"'
     networks.default.dns_record_name: '"((DNS_RECORD_NAME))"'
     networks.default.ip: '"((IP_ADDRESS))"'
-    properties.cf_mysql.mysql.advertise_host: mysql-((KUBE_COMPONENT_INDEX)).mysql-set.((KUBERNETES_NAMESPACE)).svc.((KUBERNETES_CLUSTER_DOMAIN))
     properties.encryption.encryption_keys: '[{"label":"smorgasbrod","passphrase":"((AEK_PASSWORD))"}]'
     properties.fissile.monit.password: '"((MONIT_PASSWORD))"'
     properties.login.saml.serviceProviderCertificate: '"((SAML_SERVICEPROVIDER_CERT))"'
@@ -266,10 +353,40 @@ variables:
   options:
     description: Expiration for generated certificates (in days)
     default: 10950
+- name: CF_MYSQL_PROXY_API_PASSWORD
+  options:
+    previous_names:
+    - MYSQL_PROXY_ADMIN_PASSWORD
+    secret: true
+    description: The password for Basic Auth used to secure the MySQL proxy API.
+    required: true
+  type: password
 - name: DOMAIN
   options:
     description: Base domain name of the UAA endpoint; `uaa.${DOMAIN}` must be correctly
       configured to point to this UAA instance.
+    required: true
+- name: GALERA_HEALTHCHECK_ENDPOINT_DATABASE_PASSWORD
+  options:
+    previous_names:
+    - MYSQL_GALERA_HEALTHCHECK_ENDPOINT_PASSWORD
+    secret: true
+    description: Password used to authenticate to the MySQL Galera healthcheck endpoint.
+    required: true
+  type: password
+- name: GALERA_SERVER_CERT
+  options:
+    secret: true
+    ca: INTERNAL_CA_CERT
+    alternative_names:
+    - galera_server_certificate
+    description: A PEM-encoded TLS certificate for the Galera server.
+    required: true
+  type: certificate
+- name: GALERA_SERVER_CERT_KEY
+  options:
+    secret: true
+    description: A PEM-encoded TLS key for the Galera server.
     required: true
 - name: HELM_IS_INSTALL
   options:
@@ -335,6 +452,10 @@ variables:
     description: >
       This is an environment variable built-in by fissile.
       Its default value is 'secret-1' and cannot be set by the user.
+- name: KUBE_SIZING_MYSQL_COUNT
+  options:
+    description: The number of mysql replicas deployed. This value is set automatically
+      by the helm charts of SCF.
 - name: LOG_LEVEL
   options:
     default: info
@@ -366,18 +487,21 @@ variables:
     description: The password for the cluster logger health user.
     required: true
   type: password
-- name: MYSQL_GALERA_HEALTHCHECK_ENDPOINT_PASSWORD
+- name: MYSQL_SERVER_CERT
   options:
     secret: true
-    description: The password used to contact the sidecar endpoints via Basic Auth.
+    ca: INTERNAL_CA_CERT
+    alternative_names:
+    - "mysql-set.{{ .KUBERNETES_NAMESPACE }}.svc.{{ .KUBERNETES_CLUSTER_DOMAIN }}"
+    - "mysql-proxy-set.{{ .KUBERNETES_NAMESPACE }}.svc.{{ .KUBERNETES_CLUSTER_DOMAIN }}"
+    description: A PEM-encoded TLS certificate for the MySQL server.
     required: true
-  type: password
-- name: MYSQL_PROXY_ADMIN_PASSWORD
+  type: certificate
+- name: MYSQL_SERVER_CERT_KEY
   options:
     secret: true
-    description: The password for Basic Auth used to secure the MySQL proxy API.
+    description: A PEM-encoded TLS key for the MySQL server.
     required: true
-  type: password
 - name: SAML_SERVICEPROVIDER_CERT
   options:
     secret: true
