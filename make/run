@@ -91,7 +91,11 @@ if supports_psp ; then
     fi
 fi
 
-helm install helm "${helm_args[@]}" "$@"
+: "${UAA_CHART:="${GIT_ROOT}/helm"}"
+
+echo helm install "${UAA_CHART}" "${helm_args[@]}" "$@"
+
+helm install "${UAA_CHART}" "${helm_args[@]}" "$@"
 
 stampy "${GIT_ROOT}/uaa_metrics.csv" "$0" make-run::create end
 

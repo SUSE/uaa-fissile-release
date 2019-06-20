@@ -39,7 +39,11 @@ else
     )
 fi
 
-helm upgrade "${RELEASE}" helm "${helm_args[@]}" "$@"
+: "${UAA_CHART:="${GIT_ROOT}/helm"}"
+
+echo helm upgrade "${RELEASE}" "${UAA_CHART}" "${helm_args[@]}" "$@"
+
+helm upgrade "${RELEASE}" "${UAA_CHART}" "${helm_args[@]}" "$@"
 
 stampy "${GIT_ROOT}/uaa_metrics.csv" "$0" make-run::upgrade end
 stampy "${GIT_ROOT}/uaa_metrics.csv" "$0" make-run 'done'
