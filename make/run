@@ -16,6 +16,11 @@ has_namespace() {
 stampy "${GIT_ROOT}/uaa_metrics.csv" "$0" make-run start
 
 stampy "${GIT_ROOT}/uaa_metrics.csv" "$0" make-run::namespace start
+
+if helm list --short uaa | grep --quiet --line-regexp uaa ; then
+    helm delete --purge uaa
+fi
+
 if has_namespace ; then
     kubectl delete namespace "${NAMESPACE}"
 fi
