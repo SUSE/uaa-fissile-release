@@ -321,6 +321,7 @@ configuration:
     ip: '"((IP_ADDRESS))"'
     networks.default.dns_record_name: '"((DNS_RECORD_NAME))"'
     networks.default.ip: '"((IP_ADDRESS))"'
+    #properties.cf_mysql.mysql.advertise_host: mysql-((KUBE_COMPONENT_INDEX)).mysql-set.((KUBERNETES_NAMESPACE)).svc.((KUBERNETES_CLUSTER_DOMAIN))
     properties.encryption.encryption_keys: '[{"label":"smorgasbrod","passphrase":"((AEK_PASSWORD))"}]'
     properties.fissile.monit.password: '"((MONIT_PASSWORD))"'
     properties.login.saml.serviceProviderCertificate: '"((SAML_SERVICEPROVIDER_CERT))"'
