@@ -9,9 +9,9 @@ releases:
   url: https://bosh.io/d/github.com/cloudfoundry/uaa-release?v=68.0
   sha1: a06e5390463c760bcbcc0bacaec063f41a5ea089
 - name: scf-helper
-  version: 1.0.1
-  url: https://s3.amazonaws.com/suse-final-releases/scf-helper-release-1.0.1.tgz
-  sha1: 94bb4357cbe5fa07ddeb7efef1d1f7a2af8dfead
+  url: "https://s3.amazonaws.com/suse-final-releases/scf-helper-release-1.0.3.tgz"
+  version: "1.0.3"
+  sha1: "c6187d732f0b49f837bdadd0221fe0d91eb55515"
 
 instance_groups:
 - name: mysql
