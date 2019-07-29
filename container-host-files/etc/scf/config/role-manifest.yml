@@ -5,9 +5,9 @@ releases:
   version: 36.15.0
   sha1: 0764d9d6aae7cefd10019437ed83e7715e614633
 - name: uaa
-  version: 68.0
-  url: https://bosh.io/d/github.com/cloudfoundry/uaa-release?v=68.0
-  sha1: a06e5390463c760bcbcc0bacaec063f41a5ea089
+  version: '72.0'
+  url: https://bosh.io/d/github.com/cloudfoundry/uaa-release?v=72.0
+  sha1: 7130e5ac640ed1e1f52c09e76995e4d0680f3b45
 - name: scf-helper
   url: "https://s3.amazonaws.com/suse-final-releases/scf-helper-release-1.0.3.tgz"
   version: "1.0.3"
