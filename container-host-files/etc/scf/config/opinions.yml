@@ -6,11 +6,7 @@ properties:
       startup_timeout: 300
       galera_healthcheck:
         endpoint_username: galera_healthcheck_bootstrap_user
-      max_open_files: 1500
-    proxy:
-      api_force_https: false
-      api_username: 'mysql_proxy'
-      healthcheck_timeout_millis: 30000
+  cf_mysql_enabled: false
   encryption:
     active_key_label: smorgasbrod
   fissile:
