@@ -22,6 +22,7 @@ releases:
   sha1: "d8f4eb845f18dfd89dbad2a7aab7284d81151367"
 instance_groups:
 - name: mysql
+  default_feature: mysql
   scripts:
   - scripts/create_mysql_data_tmp.sh # Deprecated. Should go away with cf-mysql-release.
   - scripts/chown_vcap_store.sh
@@ -116,7 +117,10 @@ instance_groups:
       properties.engine_config.binlog.enabled: false
       properties.engine_config.galera.enabled: true
       properties.monit_startup_timeout: 300
-      properties.seeded_databases: '[{"name":"uaadb", "username": "uaaadmin", "password":"((UAADB_PASSWORD))"}]'
+      properties.seeded_databases: &seeded_databases >
+        [
+          {"name":"uaadb", "username": "uaaadmin", "password":"((UAADB_PASSWORD))"}
+        ]
       properties.tls.galera.ca: ((INTERNAL_CA_CERT))
       properties.tls.galera.certificate: ((GALERA_SERVER_CERT))
       properties.tls.galera.private_key: ((GALERA_SERVER_CERT_KEY))
@@ -124,6 +128,7 @@ instance_groups:
       properties.tls.server.certificate: ((MYSQL_SERVER_CERT))
       properties.tls.server.private_key: ((MYSQL_SERVER_CERT_KEY))
 - name: mysql-proxy
+  default_feature: mysql
   scripts:
   - scripts/forward_logfiles.sh
   - scripts/patches/fix_monit_rsyslog.sh
@@ -245,9 +250,54 @@ instance_groups:
       properties.login.smtp.starttls: ((SMTP_STARTTLS))
       properties.login.smtp.user: ((SMTP_USER))
       properties.uaa.logging_level: ((LOG_LEVEL_LOG4J))((#LOG_LEVEL))((/LOG_LEVEL))
-      properties.uaadb.roles: '[{"name": "uaaadmin", "password": "((UAADB_PASSWORD))", "tag": "admin"}]'
-      properties.wait-for-database.hostname: mysql-proxy-set
-      properties.wait-for-database.port: 3306
+      properties.uaadb.address: &uaa-internal-database-host >
+        ((#DB_EXTERNAL_HOST))
+          ((DB_EXTERNAL_HOST))
+        ((/DB_EXTERNAL_HOST))
+        ((^DB_EXTERNAL_HOST))
+          mysql-proxy-set.((KUBERNETES_NAMESPACE)).svc.((KUBERNETES_CLUSTER_DOMAIN))
+        ((/DB_EXTERNAL_HOST))
+      properties.uaadb.db_scheme: >
+        ((#DB_EXTERNAL_HOST))((DB_EXTERNAL_DRIVER))((/DB_EXTERNAL_HOST))((^DB_EXTERNAL_HOST))mysql((/DB_EXTERNAL_HOST))
+      properties.uaadb.port: &uaa-internal-database-port >
+        ((#DB_EXTERNAL_HOST))((DB_EXTERNAL_PORT))((/DB_EXTERNAL_HOST))((^DB_EXTERNAL_HOST))3306((/DB_EXTERNAL_HOST))
+      properties.uaadb.roles: >
+        [
+          {
+            "name": "((#DB_EXTERNAL_HOST))((DB_EXTERNAL_USER))((/DB_EXTERNAL_HOST))((^DB_EXTERNAL_HOST))uaaadmin((/DB_EXTERNAL_HOST))",
+            "password": "((#DB_EXTERNAL_HOST))((DB_EXTERNAL_PASSWORD))((/DB_EXTERNAL_HOST))((^DB_EXTERNAL_HOST))((UAADB_PASSWORD))((/DB_EXTERNAL_HOST))",
+            "tag": "admin"
+          }
+        ]
+      properties.wait-for-database.hostname: *uaa-internal-database-host
+      properties.wait-for-database.port: *uaa-internal-database-port
+
+- name: post-deployment-setup
+  type: bosh-task
+  jobs:
+  - name: global-uaa-properties # needs to be first so images use it for processing monit templates.
+    release: scf-helper
+  - name: database-seeder
+    release: scf-helper
+    properties:
+      bosh_containerization:
+        run:
+          scaling:
+            min: 1
+            max: 1
+          flight-stage: post-flight
+          memory: 256
+          virtual-cpus: 1
+  configuration:
+    templates:
+      properties.database-seeder.driver: ((#DB_EXTERNAL_HOST))((DB_EXTERNAL_DRIVER))((/DB_EXTERNAL_HOST))
+      properties.database-seeder.host: ((DB_EXTERNAL_HOST))
+      properties.database-seeder.password: ((DB_EXTERNAL_PASSWORD))
+      properties.database-seeder.port: ((DB_EXTERNAL_PORT))
+      properties.database-seeder.sslmode: ((DB_EXTERNAL_SSL_MODE))
+      properties.database-seeder.username: ((DB_EXTERNAL_USER))
+      properties.seeded_databases: *seeded_databases
+
 - name: secret-generation
   type: bosh-task
   jobs:
@@ -357,6 +407,48 @@ variables:
   options:
     description: Expiration for generated certificates (in days)
     default: 10950
+- name: DB_EXTERNAL_DRIVER
+  options:
+    immutable: true
+    description: >
+      Database driver to use for the external database server used to manage the
+      UAA-internal database.  Only used if DB_EXTERNAL_HOST is set.  Currently
+      only `mysql` is valid.
+    default: mysql
+- name: DB_EXTERNAL_HOST
+  options:
+    immutable: true
+    description: >
+      Hostname for an external database server to use for the UAA-internal database
+      If not set, the internal database is used.
+    default: null
+- name: DB_EXTERNAL_PASSWORD
+  options:
+    immutable: true
+    description: >
+      Administrator password for an external database server; this is required
+      to create the necessary databases.  Only used if DB_EXTERNAL_HOST is set.
+    secret: true
+- name: DB_EXTERNAL_PORT
+  options:
+    immutable: true
+    description: >
+      Port for an external database server to use for the UAA-internal database.
+      Only used if DB_EXTERNAL_HOST is set.
+    default: "3306"
+- name: DB_EXTERNAL_SSL_MODE
+  options:
+    immutable: true
+    description: >
+      TLS configuration for the external database server to use for the
+      UAA-internal database.  Only used if DB_EXTERNAL_HOST is set.  Valid
+      values depend on which database driver is in use.
+- name: DB_EXTERNAL_USER
+  options:
+    immutable: true
+    description: >
+      Administrator user name for an external database server; this is required
+      to create the necessary databases.  Only used if DB_EXTERNAL_HOST is set.
 - name: DOMAIN
   options:
     description: Base domain name of the UAA endpoint; `uaa.${DOMAIN}` must be correctly
