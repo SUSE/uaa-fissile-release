@@ -17,9 +17,9 @@ releases:
   url: https://bosh.io/d/github.com/cloudfoundry/uaa-release?v=72.0
   sha1: 7130e5ac640ed1e1f52c09e76995e4d0680f3b45
 - name: scf-helper
-  url: "https://s3.amazonaws.com/suse-final-releases/scf-helper-release-1.0.5.tgz"
-  version: "1.0.5"
-  sha1: "c06bd583eb655ce9ed562f812ede5a6ace27d9d2"
+  url: "https://s3.amazonaws.com/suse-final-releases/scf-helper-release-1.0.7.tgz"
+  version: "1.0.7"
+  sha1: "d8f4eb845f18dfd89dbad2a7aab7284d81151367"
 instance_groups:
 - name: mysql
   scripts:
@@ -132,6 +132,14 @@ instance_groups:
   jobs:
   - name: global-uaa-properties # needs to be first so images use it for processing monit templates.
     release: scf-helper
+  - name: bpm
+    release: bpm
+    properties:
+      bosh_containerization:
+        run:
+          privileged: true
+  - name: switchboard-leader
+    release: scf-helper
   - name: proxy
     release: pxc
     provides:
@@ -155,6 +163,7 @@ instance_groups:
             ha: 2
           memory: 2500
           virtual-cpus: 2
+          active-passive-probe: /var/vcap/jobs/switchboard-leader/bin/readiness/switchboard
           healthcheck:
             readiness:
               command:
@@ -171,13 +180,8 @@ instance_groups:
                       values:
                       - mysql
                   topologyKey: "beta.kubernetes.io/os"
-  - name: bpm
-    release: bpm
-    properties:
-      bosh_containerization:
-        run:
-          privileged: true
   tags:
+  - active-passive
   - sequential-startup
   configuration:
     templates:
@@ -280,7 +284,7 @@ configuration:
         verbs: [get, list, patch]
       - apiGroups: [""]
         resources: [services]
-        verbs: [get]
+        verbs: [get, list, patch]
       - apiGroups: [apps]
         resources: [statefulsets]
         verbs: [get, patch]
