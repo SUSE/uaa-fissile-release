@@ -19,9 +19,6 @@ properties:
         active_key_id: default
     logging_level: INFO
   uaadb:
-    address: mysql-set
     databases:
     - name: uaadb
       tag: uaa
-    db_scheme: mysql
-    port: 3306
