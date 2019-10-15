@@ -338,9 +338,12 @@ configuration:
       - apiGroups: [apps]
         resources: [statefulsets]
         verbs: [get, patch]
+      - apiGroups: [""]
+        resources: [secrets]
+        verbs: [create, get, delete]
       secrets-role:
       - apiGroups: [""]
-        resources: [configmaps ,secrets]
+        resources: [configmaps, secrets]
         verbs: [create, get, list, patch, update, delete]
       psp-role:
       - apiGroups: [extensions]
