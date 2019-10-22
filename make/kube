@@ -31,7 +31,7 @@ if [ "${BUILD_TARGET}" = "helm" ]; then
     fi
 
     cat > "${BUILD_TARGET}/Chart.yaml" << EOF
-apiVersion: ${APP_VERSION}
+apiVersion: v1
 appVersion: ${PRODUCT_VERSION}
 description: A Helm chart for SUSE UAA
 name: uaa${chart_name_suffix}
