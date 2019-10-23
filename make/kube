@@ -36,6 +36,7 @@ appVersion: ${PRODUCT_VERSION}
 description: A Helm chart for SUSE UAA
 name: uaa${chart_name_suffix}
 version: ${GIT_TAG}
+scfVersion: ${APP_VERSION}
 EOF
     cp chart-parts/* "${BUILD_TARGET}/templates/"
     ruby ../../bin/image-list.rb "${BUILD_TARGET}"
