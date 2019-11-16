@@ -339,7 +339,7 @@ configuration:
         verbs: [get, patch]
       - apiGroups: [""]
         resources: [secrets]
-        verbs: [create, get, delete]
+        verbs: [create, get, update, delete]
       secrets-role:
       - apiGroups: [""]
         resources: [configmaps, secrets]
