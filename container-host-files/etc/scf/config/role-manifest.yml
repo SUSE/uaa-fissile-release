@@ -206,8 +206,6 @@ instance_groups:
   jobs:
   - name: global-uaa-properties # needs to be first so images use it for processing monit templates
     release: scf-helper
-  - name: wait-for-database
-    release: scf-helper
   - name: uaa
     release: uaa
     properties:
@@ -237,6 +235,8 @@ instance_groups:
           external: 2793
           internal: 8443
           public: true
+  - name: wait-for-database
+    release: scf-helper
   tags:
   - sequential-startup
   configuration:
