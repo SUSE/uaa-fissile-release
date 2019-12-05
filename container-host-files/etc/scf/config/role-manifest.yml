@@ -17,10 +17,29 @@ releases:
   url: https://bosh.io/d/github.com/cloudfoundry/uaa-release?v=72.0
   sha1: 7130e5ac640ed1e1f52c09e76995e4d0680f3b45
 - name: scf-helper
-  url: "https://s3.amazonaws.com/suse-final-releases/scf-helper-release-1.0.9.tgz"
-  version: "1.0.9"
-  sha1: "8e8c03d7fbd4e7664fc8ebc19fcf3baa3c1c579f"
+  url: "https://s3.amazonaws.com/suse-final-releases/scf-helper-release-1.0.10.tgz"
+  version: "1.0.10"
+  sha1: "9bd4aca7178014b7b7d84b4dbf331d01cdbf3878"
 instance_groups:
+- name: configgin-helper
+  scripts:
+  - scripts/forward_logfiles.sh
+  - scripts/patches/fix_monit_rsyslog.sh
+  jobs:
+  - name: global-properties # needs to be first so images use it for processing monit templates.
+    release: scf-helper
+  - name: configgin-helper
+    release: scf-helper
+    properties:
+      bosh_containerization:
+        run:
+          service-account: configgin
+          scaling:
+            min: 1
+            max: 65535
+            ha: 2
+          memory: 64
+          virtual-cpus: 1
 - name: mysql
   default_feature: mysql
   scripts:
@@ -161,6 +180,7 @@ instance_groups:
           protocol: TCP
           internal: 1936
         run:
+          service-account: active-passive
           scaling:
             min: 1
             max: 5
@@ -327,28 +347,36 @@ instance_groups:
 configuration:
   auth:
     roles:
-      configgin-role:
+      active-passive:
       - apiGroups: [""]
         resources: [pods]
-        verbs: [get, list, patch]
+        verbs: [patch]
+      # switchboard-leader for mysql-proxy is annotating services
       - apiGroups: [""]
         resources: [services]
         verbs: [get, list, patch]
+      configgin:
+      - apiGroups: [""]
+        resources: [pods]
+        verbs: [get, list]
+      - apiGroups: [""]
+        resources: [services]
+        verbs: [get]
       - apiGroups: [apps]
         resources: [statefulsets]
         verbs: [get, patch]
       - apiGroups: [""]
         resources: [secrets]
         verbs: [create, get, update, delete]
-      secrets-role:
-      - apiGroups: [""]
-        resources: [configmaps, secrets]
-        verbs: [create, get, list, patch, update, delete]
-      psp-role:
+      psp:
       - apiGroups: [extensions]
         resourceNames: [default]
         resources: [podsecuritypolicies]
         verbs: [use]
+      secrets:
+      - apiGroups: [""]
+        resources: [configmaps, secrets]
+        verbs: [create, get, list, patch, update, delete]
     pod-security-policies:
       default:
         allowPrivilegeEscalation: true
@@ -368,10 +396,15 @@ configuration:
         - persistentVolumeClaim
         - nfs
     accounts:
+      active-passive:
+        roles: [active-passive, psp]
+      configgin:
+        roles: [configgin, psp]
       default:
-        roles: [configgin-role, psp-role]
+        roles: [psp]
       secret-generator:
-        roles: [configgin-role, secrets-role, psp-role]
+        # Include configgin role so that we don't deadlock with configgin-helper
+        roles: [configgin, secrets, psp]
   templates:
     index: ((KUBE_COMPONENT_INDEX))((^KUBE_COMPONENT_INDEX))0((/KUBE_COMPONENT_INDEX))
     ip: '"((IP_ADDRESS))"'
