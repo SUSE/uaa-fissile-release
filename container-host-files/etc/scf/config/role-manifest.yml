@@ -101,7 +101,7 @@ instance_groups:
                       operator: In
                       values:
                       - mysql
-                  topologyKey: "beta.kubernetes.io/os"
+                  topologyKey: '{{if eq (typeOf .Values.kube.podAntiAffinityTopologyKey) "<nil>"}}kubernetes.io/hostname{{else}}{{.Values.kube.podAntiAffinityTopologyKey}}{{end}}'
   - name: galera-agent
     release: pxc
   - name: gra-log-purger
@@ -203,7 +203,7 @@ instance_groups:
                       operator: In
                       values:
                       - mysql
-                  topologyKey: "beta.kubernetes.io/os"
+                  topologyKey: '{{if eq (typeOf .Values.kube.podAntiAffinityTopologyKey) "<nil>"}}kubernetes.io/hostname{{else}}{{.Values.kube.podAntiAffinityTopologyKey}}{{end}}'
   tags:
   - active-passive
   - sequential-startup
