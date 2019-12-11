@@ -202,7 +202,7 @@ instance_groups:
                     - key: "app.kubernetes.io/component"
                       operator: In
                       values:
-                      - mysql
+                      - mysql-proxy
                   topologyKey: '{{if eq (typeOf .Values.kube.podAntiAffinityTopologyKey) "<nil>"}}kubernetes.io/hostname{{else}}{{.Values.kube.podAntiAffinityTopologyKey}}{{end}}'
   tags:
   - active-passive
