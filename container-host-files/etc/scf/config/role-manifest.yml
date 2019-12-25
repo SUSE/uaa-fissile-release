@@ -17,9 +17,9 @@ releases:
   url: https://bosh.io/d/github.com/cloudfoundry/uaa-release?v=72.0
   sha1: 7130e5ac640ed1e1f52c09e76995e4d0680f3b45
 - name: scf-helper
-  url: "https://s3.amazonaws.com/suse-final-releases/scf-helper-release-1.0.10.tgz"
-  version: "1.0.10"
-  sha1: "9bd4aca7178014b7b7d84b4dbf331d01cdbf3878"
+  url: https://s3.amazonaws.com/suse-final-releases/scf-helper-release-1.0.12.tgz
+  version: 1.0.12
+  sha1: sha256:650ebf991190538dda4bf286d89528db043ba12d3856d568a0ca51ba158f1651
 instance_groups:
 - name: configgin-helper
   scripts:
