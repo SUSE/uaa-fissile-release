@@ -1,9 +1,9 @@
 ---
 releases:
 - name: bpm
-  version: 1.1.5
-  url: https://bosh.io/d/github.com/cloudfoundry/bpm-release?v=1.1.5
-  sha1: e612e88543012ae5d376dd3746159d5abe748076
+  version: 1.1.6
+  url: https://bosh.io/d/github.com/cloudfoundry/bpm-release?v=1.1.6
+  sha1: 5bad6161dbbcf068830a100b6a76056fe3b99bc8
 - name: cf-mysql
   url: https://bosh.io/d/github.com/cloudfoundry/cf-mysql-release?v=36.15.0
   version: 36.15.0
@@ -13,9 +13,9 @@ releases:
   version: 0.21.0
   sha1: 499e1bb3d90f9532229ff915f7704ac48b8a9741
 - name: uaa
-  version: 74.10.0
-  url: https://bosh.io/d/github.com/cloudfoundry/uaa-release?v=74.10.0
-  sha1: 8fbc7344691240859a628140b9220045f264aa8e
+  version: 74.12.0
+  url: https://bosh.io/d/github.com/cloudfoundry/uaa-release?v=74.12.0
+  sha1: 5fdd99addec2aebe521a468dba0bcd52e66c86c6
 - name: scf-helper
   url: https://s3.amazonaws.com/suse-final-releases/scf-helper-release-1.0.13.tgz
   version: 1.0.13
