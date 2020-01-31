@@ -509,7 +509,7 @@ variables:
     immutable: true
     description: >
       A suffix that has to be appended to every user name for the external
-      database; usualy '@host'. Only used if DB_EXTERNAL_HOST is set.
+      database; usually '@host'. Only used if DB_EXTERNAL_HOST is set.
     default: ""
 - name: DOMAIN
   options:
