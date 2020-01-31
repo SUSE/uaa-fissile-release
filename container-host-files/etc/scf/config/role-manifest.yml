@@ -137,7 +137,7 @@ instance_groups:
       properties.monit_startup_timeout: 300
       properties.seeded_databases: &seeded_databases >
         [
-          {"name":"uaadb", "username": "uaaadmin", "password":"((UAADB_PASSWORD))"}
+          {"name":"uaadb", "username": "uaaadmin((DB_EXTERNAL_USER_HOST_SUFFIX))", "password":"((UAADB_PASSWORD))"}
         ]
       properties.tls.galera.ca: ((INTERNAL_CA_CERT))
       properties.tls.galera.certificate: ((GALERA_SERVER_CERT))
@@ -306,7 +306,7 @@ instance_groups:
         ((#DB_EXTERNAL_HOST))((DB_EXTERNAL_DRIVER))((/DB_EXTERNAL_HOST))((^DB_EXTERNAL_HOST))mysql((/DB_EXTERNAL_HOST))
       properties.uaadb.port: &uaa-internal-database-port >
         ((#DB_EXTERNAL_HOST))((DB_EXTERNAL_PORT))((/DB_EXTERNAL_HOST))((^DB_EXTERNAL_HOST))3306((/DB_EXTERNAL_HOST))
-      properties.uaadb.roles: '[{"name": "uaaadmin", "password": "((UAADB_PASSWORD))", "tag": "admin"}]'
+      properties.uaadb.roles: '[{"name": "uaaadmin((DB_EXTERNAL_USER_HOST_SUFFIX))", "password": "((UAADB_PASSWORD))", "tag": "admin"}]'
       properties.uaadb.tls: "((UAADB_TLS))"
       properties.wait-for-database.hostname: *uaa-internal-database-host
       properties.wait-for-database.port: *uaa-internal-database-port
@@ -504,6 +504,13 @@ variables:
     description: >
       Administrator user name for an external database server; this is required
       to create the necessary databases.  Only used if DB_EXTERNAL_HOST is set.
+- name: DB_EXTERNAL_USER_HOST_SUFFIX
+  options:
+    immutable: true
+    description: >
+      A suffix that has to be appended to every user name for the external
+      database; usualy '@host'. Only used if DB_EXTERNAL_HOST is set.
+    default: ""
 - name: DOMAIN
   options:
     description: Base domain name of the UAA endpoint; `uaa.${DOMAIN}` must be correctly
