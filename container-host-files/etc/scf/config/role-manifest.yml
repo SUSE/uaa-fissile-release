@@ -334,7 +334,7 @@ instance_groups:
       properties.database-seeder.password: ((DB_EXTERNAL_PASSWORD))
       properties.database-seeder.port: ((DB_EXTERNAL_PORT))
       properties.database-seeder.sslmode: ((DB_EXTERNAL_SSL_MODE))
-      properties.database-seeder.username: ((DB_EXTERNAL_USER))
+      properties.database-seeder.username: "((DB_EXTERNAL_USER))((DB_EXTERNAL_USER_HOST_SUFFIX))"
       properties.seeded_databases: *seeded_databases
 
 - name: secret-generation
