@@ -137,7 +137,7 @@ instance_groups:
       properties.monit_startup_timeout: 300
       properties.seeded_databases: &seeded_databases >
         [
-          {"name":"uaadb", "username": "uaaadmin((DB_EXTERNAL_USER_HOST_SUFFIX))", "password":"((UAADB_PASSWORD))"}
+          {"name":"uaadb", "username": "uaaadmin", "password":"((UAADB_PASSWORD))"}
         ]
       properties.tls.galera.ca: ((INTERNAL_CA_CERT))
       properties.tls.galera.certificate: ((GALERA_SERVER_CERT))
